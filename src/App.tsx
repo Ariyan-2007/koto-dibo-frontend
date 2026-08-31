@@ -1,0 +1,59 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { BootstrapGate, RedirectIfAuthed, RequireAuth } from '@/routes/RequireAuth'
+import { HouseholdLayout } from '@/routes/HouseholdLayout'
+import { RootRedirect } from '@/routes/RootRedirect'
+import { Toaster } from '@/components/ui/Toaster'
+
+import { LoginPage } from '@/routes/auth/LoginPage'
+import { RegisterPage } from '@/routes/auth/RegisterPage'
+import { HouseholdListPage } from '@/routes/households/HouseholdListPage'
+import { SettlementDashboardPage } from '@/routes/settlement/SettlementDashboardPage'
+import { LedgerPage } from '@/routes/ledger/LedgerPage'
+import { BazarListPage } from '@/routes/ledger/BazarListPage'
+import { ContributionsListPage } from '@/routes/ledger/ContributionsListPage'
+import { MealGridPage } from '@/routes/meals/MealGridPage'
+import { MealSettlementPage } from '@/routes/meals/MealSettlementPage'
+import { BillSplitListPage } from '@/routes/billsplits/BillSplitListPage'
+import { CreateBillSplitPage } from '@/routes/billsplits/CreateBillSplitPage'
+import { BillSplitDetailPage } from '@/routes/billsplits/BillSplitDetailPage'
+import { HouseholdSettingsPage } from '@/routes/households/HouseholdSettingsPage'
+import { MembersPage } from '@/routes/households/MembersPage'
+
+export default function App() {
+  return (
+    <BootstrapGate>
+      <Routes>
+        <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
+        <Route path="/register" element={<RedirectIfAuthed><RegisterPage /></RedirectIfAuthed>} />
+
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/households" element={<HouseholdListPage />} />
+
+          <Route path="/h/:householdId" element={<HouseholdLayout />}>
+            <Route index element={<SettlementDashboardPage />} />
+
+            <Route path="ledger" element={<LedgerPage />}>
+              <Route index element={<Navigate to="bazar" replace />} />
+              <Route path="bazar" element={<BazarListPage />} />
+              <Route path="contributions" element={<ContributionsListPage />} />
+            </Route>
+
+            <Route path="meals" element={<MealGridPage />} />
+            <Route path="meals/settlement" element={<MealSettlementPage />} />
+
+            <Route path="bill-splits" element={<BillSplitListPage />} />
+            <Route path="bill-splits/new" element={<CreateBillSplitPage />} />
+            <Route path="bill-splits/:billSplitId" element={<BillSplitDetailPage />} />
+
+            <Route path="settings" element={<HouseholdSettingsPage />} />
+            <Route path="settings/members" element={<MembersPage />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster />
+    </BootstrapGate>
+  )
+}
