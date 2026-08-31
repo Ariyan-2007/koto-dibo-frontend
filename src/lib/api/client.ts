@@ -2,7 +2,7 @@ import type { ApiErrorEnvelope, AuthResponse } from './types'
 import { getAccessToken, useAuthStore } from '@/lib/auth/authStore'
 import { getStoredRefreshToken } from '@/lib/auth/tokenStorage'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api`
 
 export class ApiError extends Error {
   status: number
@@ -79,13 +79,13 @@ interface RequestOptions {
 }
 
 function buildUrl(path: string, query?: RequestOptions['query']): string {
-  const url = new URL(`${API_BASE}${path}`, window.location.origin)
+  const url = new URL(`${API_BASE}${path}`)
   if (query) {
     for (const [key, value] of Object.entries(query)) {
       if (value !== undefined) url.searchParams.set(key, String(value))
     }
   }
-  return url.pathname + url.search
+  return url.toString()
 }
 
 async function rawRequest(path: string, options: RequestOptions, token: string | null): Promise<Response> {
