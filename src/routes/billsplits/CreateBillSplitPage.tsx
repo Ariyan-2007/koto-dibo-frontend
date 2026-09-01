@@ -8,6 +8,8 @@ import type { BillSplitMethod } from '@/lib/api/types'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { useIsMounted } from '@/lib/useIsMounted'
+import { BILL_SPLIT_METHOD_LABEL } from '@/lib/billsplit/labels'
+import { FixedChargesInput, toFixedCharges, type FixedChargeRow } from '@/components/billsplit/FixedChargesInput'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { InputField, SelectField, TextareaField } from '@/components/ui/Field'
@@ -17,9 +19,13 @@ import { cn } from '@/lib/cn'
 import { todayIso } from '@/lib/format'
 
 const METHODS: { value: BillSplitMethod; label: string; hint: string }[] = [
-  { value: 'TariffMetered', label: 'Tariff metered', hint: 'Sub-meter usage billed against progressive tariff bands' },
-  { value: 'EqualSplit', label: 'Equal split', hint: 'One total, split evenly across active members' },
-  { value: 'WeightedSplit', label: 'Weighted split', hint: 'One total, split by per-member weight' },
+  {
+    value: 'TariffMetered',
+    label: BILL_SPLIT_METHOD_LABEL.TariffMetered,
+    hint: 'Sub-meter usage billed against progressive tariff bands, plus any fixed fees',
+  },
+  { value: 'EqualSplit', label: BILL_SPLIT_METHOD_LABEL.EqualSplit, hint: 'One total, split evenly across active members' },
+  { value: 'WeightedSplit', label: BILL_SPLIT_METHOD_LABEL.WeightedSplit, hint: 'One total, split by per-member weight' },
 ]
 
 export function CreateBillSplitPage() {
@@ -39,6 +45,7 @@ export function CreateBillSplitPage() {
   const [totalAmount, setTotalAmount] = useState('')
   const [notes, setNotes] = useState('')
   const [memberValues, setMemberValues] = useState<Record<string, string>>({})
+  const [fixedChargeRows, setFixedChargeRows] = useState<FixedChargeRow[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const mutation = useMutation({
@@ -57,6 +64,7 @@ export function CreateBillSplitPage() {
         mainMeterUsage: method === 'TariffMetered' ? Number(mainMeterUsage) : undefined,
         totalAmount: method !== 'TariffMetered' ? Number(totalAmount) : undefined,
         memberInputs,
+        fixedCharges: method === 'TariffMetered' ? toFixedCharges(fixedChargeRows) : undefined,
         notes: notes || undefined,
       })
     },
@@ -72,6 +80,7 @@ export function CreateBillSplitPage() {
           mainMeterUsage: err.fieldError('mainMeterUsage') ?? '',
           totalAmount: err.fieldError('totalAmount') ?? '',
           memberInputs: err.fieldError('memberInputs') ?? '',
+          fixedCharges: err.fieldError('fixedCharges') ?? '',
         })
         toast.error(err.message)
       } else {
@@ -92,11 +101,11 @@ export function CreateBillSplitPage() {
         <Link to={`/h/${household.id}/bill-splits`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="text-xl font-semibold text-ink">New bill split</h1>
+        <h1 className="text-xl font-semibold text-ink">New Bill Split</h1>
       </div>
 
       <Card className="p-5">
-        <p className="mb-2 text-sm font-medium text-ink">Split method</p>
+        <p className="mb-2 text-sm font-medium text-ink">Split Method</p>
         <div className="mb-5 flex flex-col gap-2">
           {METHODS.map((m) => (
             <button
@@ -118,19 +127,19 @@ export function CreateBillSplitPage() {
           <InputField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} error={errors.title} required />
 
           <div className="grid grid-cols-2 gap-3">
-            <InputField label="Period from" type="date" value={periodFrom} onChange={(e) => setPeriodFrom(e.target.value)} required />
-            <InputField label="Period to" type="date" value={periodTo} onChange={(e) => setPeriodTo(e.target.value)} required />
+            <InputField label="Period From" type="date" value={periodFrom} onChange={(e) => setPeriodFrom(e.target.value)} required />
+            <InputField label="Period To" type="date" value={periodTo} onChange={(e) => setPeriodTo(e.target.value)} required />
           </div>
 
           <InputField label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} maxLength={3} required />
 
           {method === 'TariffMetered' ? (
             <>
-              <SelectField label="Tariff country" value="BD" disabled hint="Only Bangladesh (BD) is seeded at MVP">
+              <SelectField label="Tariff Country" value="BD" disabled hint="Only Bangladesh (BD) is seeded at MVP">
                 <option value="BD">Bangladesh (BD)</option>
               </SelectField>
               <InputField
-                label="Main meter (kWh)"
+                label="Main Meter (kWh)"
                 type="number"
                 inputMode="decimal"
                 step="0.01"
@@ -141,16 +150,17 @@ export function CreateBillSplitPage() {
                 required
               />
               <MemberValueInputs
-                title="Sub-meter usage per member"
+                title="Sub-Meter Usage per Member"
                 members={members ?? []}
                 values={memberValues}
                 onChange={setMemberValues}
                 error={errors.memberInputs}
               />
+              <FixedChargesInput rows={fixedChargeRows} onChange={setFixedChargeRows} error={errors.fixedCharges} />
             </>
           ) : (
             <InputField
-              label={`Total amount (${currency})`}
+              label={`Total Amount (${currency})`}
               type="number"
               inputMode="decimal"
               step="0.01"
@@ -164,7 +174,7 @@ export function CreateBillSplitPage() {
 
           {method === 'WeightedSplit' && (
             <MemberValueInputs
-              title="Weight per member"
+              title="Weight per Member"
               members={members ?? []}
               values={memberValues}
               onChange={setMemberValues}
@@ -175,7 +185,7 @@ export function CreateBillSplitPage() {
           <TextareaField label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
 
           <Button type="submit" isLoading={mutation.isPending} className="w-full">
-            Create bill split
+            Create Bill Split
           </Button>
         </form>
       </Card>

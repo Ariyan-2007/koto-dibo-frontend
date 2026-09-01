@@ -49,16 +49,17 @@ export function MealCellSheet({
         </div>
 
         <div className="flex items-end gap-2">
-          <InputField
-            label="Custom count"
-            type="number"
-            inputMode="decimal"
-            step="0.5"
-            min="0"
-            value={custom}
-            onChange={(e) => setCustom(e.target.value)}
-            className="flex-1"
-          />
+          <div className="min-w-0 flex-1">
+            <InputField
+              label="Custom amount"
+              type="number"
+              inputMode="decimal"
+              step="0.5"
+              min="0"
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+            />
+          </div>
           <Button
             variant="secondary"
             disabled={!custom || isSaving}
@@ -66,6 +67,7 @@ export function MealCellSheet({
               onSet(Number(custom))
               setCustom('')
             }}
+            className="shrink-0"
           >
             Set
           </Button>
@@ -73,7 +75,7 @@ export function MealCellSheet({
 
         {hasEntry && (
           <Button variant="ghost" className="text-danger" onClick={onClear} disabled={isSaving}>
-            Clear entry
+            Clear Entry
           </Button>
         )}
       </div>

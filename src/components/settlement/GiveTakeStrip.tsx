@@ -15,7 +15,7 @@ export function GiveTakeStrip({ items, currency }: { items: GiveTakeItem[]; curr
 
   return (
     <Card className="p-4">
-      <h3 className="mb-3 text-sm font-medium text-ink">Where everyone stands</h3>
+      <h3 className="mb-3 text-sm font-medium text-ink">Where Everyone Stands</h3>
       <div className="flex flex-col gap-2">
         {owed.map((i) => (
           <Row key={i.name} name={i.name} label="is owed" value={i.giveTake} currency={currency} tone="primary" />

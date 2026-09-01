@@ -5,6 +5,7 @@ import { updateBillSplit } from '@/lib/api/billSplits'
 import type { BillSplitDto } from '@/lib/api/types'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
+import { FixedChargesInput, emptyFixedChargeRow, toFixedCharges, type FixedChargeRow } from '@/components/billsplit/FixedChargesInput'
 import { Sheet } from '@/components/ui/Sheet'
 import { Button } from '@/components/ui/Button'
 import { InputField, TextareaField } from '@/components/ui/Field'
@@ -30,6 +31,9 @@ export function EditBillSplitSheet({
   const [memberValues, setMemberValues] = useState<Record<string, string>>(
     Object.fromEntries(billSplit.memberInputs.map((mi) => [mi.userId, mi.value.toString()])),
   )
+  const [fixedChargeRows, setFixedChargeRows] = useState<FixedChargeRow[]>(
+    billSplit.fixedCharges.map((fc) => ({ ...emptyFixedChargeRow(fc.label), amount: fc.amount.toString() })),
+  )
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const mutation = useMutation({
@@ -47,6 +51,7 @@ export function EditBillSplitSheet({
         mainMeterUsage: billSplit.splitMethod === 'TariffMetered' ? Number(mainMeterUsage) : undefined,
         totalAmount: billSplit.splitMethod !== 'TariffMetered' ? Number(totalAmount) : undefined,
         memberInputs,
+        fixedCharges: billSplit.splitMethod === 'TariffMetered' ? toFixedCharges(fixedChargeRows) : undefined,
       })
     },
     onSuccess: () => {
@@ -63,6 +68,7 @@ export function EditBillSplitSheet({
           mainMeterUsage: err.fieldError('mainMeterUsage') ?? '',
           totalAmount: err.fieldError('totalAmount') ?? '',
           memberInputs: err.fieldError('memberInputs') ?? '',
+          fixedCharges: err.fieldError('fixedCharges') ?? '',
         })
         toast.error(err.message)
       } else {
@@ -78,13 +84,13 @@ export function EditBillSplitSheet({
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Edit bill split">
+    <Sheet open={open} onClose={onClose} title="Edit Bill Split">
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <InputField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} error={errors.title} required />
 
         {billSplit.splitMethod === 'TariffMetered' ? (
           <InputField
-            label="Main meter (kWh)"
+            label="Main Meter (kWh)"
             type="number"
             inputMode="decimal"
             step="0.01"
@@ -96,7 +102,7 @@ export function EditBillSplitSheet({
           />
         ) : (
           <InputField
-            label={`Total amount (${billSplit.currency})`}
+            label={`Total Amount (${billSplit.currency})`}
             type="number"
             inputMode="decimal"
             step="0.01"
@@ -111,7 +117,7 @@ export function EditBillSplitSheet({
         {billSplit.splitMethod !== 'EqualSplit' && (
           <div>
             <p className="mb-2 text-sm font-medium text-ink">
-              {billSplit.splitMethod === 'TariffMetered' ? 'Sub-meter usage per member' : 'Weight per member'}
+              {billSplit.splitMethod === 'TariffMetered' ? 'Sub-Meter Usage per Member' : 'Weight per Member'}
             </p>
             <div className="flex flex-col gap-2">
               {(members ?? []).map((m) => (
@@ -133,10 +139,14 @@ export function EditBillSplitSheet({
           </div>
         )}
 
+        {billSplit.splitMethod === 'TariffMetered' && (
+          <FixedChargesInput rows={fixedChargeRows} onChange={setFixedChargeRows} error={errors.fixedCharges} />
+        )}
+
         <TextareaField label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
 
         <Button type="submit" isLoading={mutation.isPending} className="w-full">
-          Save changes
+          Save Changes
         </Button>
       </form>
     </Sheet>

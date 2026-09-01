@@ -7,14 +7,12 @@ import { Sheet } from '@/components/ui/Sheet'
 import { Button } from '@/components/ui/Button'
 import { InputField } from '@/components/ui/Field'
 import { toast } from '@/lib/toast'
-import { useIsMounted } from '@/lib/useIsMounted'
 
 const TYPE_SUGGESTIONS = ['Bachelor Mess', 'Family Home', 'Shared Flat']
 
 export function CreateHouseholdSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const isMounted = useIsMounted()
   const [name, setName] = useState('')
   const [type, setType] = useState('')
   const [description, setDescription] = useState('')
@@ -26,7 +24,7 @@ export function CreateHouseholdSheet({ open, onClose }: { open: boolean; onClose
       queryClient.invalidateQueries({ queryKey: ['households'] })
       toast.success('Household created')
       onClose()
-      if (isMounted.current) navigate(`/h/${household.id}`)
+      navigate(`/h/${household.id}`)
     },
     onError: (err) => {
       if (err instanceof ApiError && err.errors) {
@@ -44,7 +42,7 @@ export function CreateHouseholdSheet({ open, onClose }: { open: boolean; onClose
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="New household">
+    <Sheet open={open} onClose={onClose} title="New Household">
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <InputField
           label="Name"

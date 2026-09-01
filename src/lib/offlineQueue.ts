@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { get, set } from 'idb-keyval'
 import { create } from 'zustand'
 import { ApiError } from '@/lib/api/client'
@@ -19,15 +20,19 @@ const QUEUE_KEY = 'koto-dibo:meal-mutation-queue'
 interface OfflineQueueState {
   pendingCount: number
   isReplaying: boolean
+  queue: MealMutation[]
   setPendingCount: (count: number) => void
   setReplaying: (replaying: boolean) => void
+  setQueue: (queue: MealMutation[]) => void
 }
 
 export const useOfflineQueueStore = create<OfflineQueueState>((set) => ({
   pendingCount: 0,
   isReplaying: false,
+  queue: [],
   setPendingCount: (count) => set({ pendingCount: count }),
   setReplaying: (isReplaying) => set({ isReplaying }),
+  setQueue: (queue) => set({ queue }),
 }))
 
 async function getQueue(): Promise<MealMutation[]> {
@@ -37,6 +42,20 @@ async function getQueue(): Promise<MealMutation[]> {
 async function saveQueue(queue: MealMutation[]): Promise<void> {
   await set(QUEUE_KEY, queue)
   useOfflineQueueStore.getState().setPendingCount(queue.length)
+  useOfflineQueueStore.getState().setQueue(queue)
+}
+
+/** Which meal-grid cells (keyed `userId|date`) have a queued-but-unconfirmed write for this
+ * household — lets the grid show a per-cell "pending sync" dot alongside the global OfflineBadge. */
+export function usePendingMealKeys(householdId: string): Set<string> {
+  const queue = useOfflineQueueStore((s) => s.queue)
+  return useMemo(() => {
+    const keys = new Set<string>()
+    for (const m of queue) {
+      if (m.householdId === householdId) keys.add(`${m.userId}|${m.date}`)
+    }
+    return keys
+  }, [queue, householdId])
 }
 
 export async function enqueueMealMutation(mutation: DistributiveOmit<MealMutation, 'id'>): Promise<void> {
@@ -49,6 +68,7 @@ export async function enqueueMealMutation(mutation: DistributiveOmit<MealMutatio
 export async function initOfflineQueue(): Promise<void> {
   const queue = await getQueue()
   useOfflineQueueStore.getState().setPendingCount(queue.length)
+  useOfflineQueueStore.getState().setQueue(queue)
   window.addEventListener('online', () => void replayMealQueue())
   if (navigator.onLine) void replayMealQueue()
 }

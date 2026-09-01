@@ -8,6 +8,7 @@ import { LoginPage } from '@/routes/auth/LoginPage'
 import { RegisterPage } from '@/routes/auth/RegisterPage'
 import { HouseholdListPage } from '@/routes/households/HouseholdListPage'
 import { SettlementDashboardPage } from '@/routes/settlement/SettlementDashboardPage'
+import { LedgerHistoryPage } from '@/routes/settlement/LedgerHistoryPage'
 import { LedgerPage } from '@/routes/ledger/LedgerPage'
 import { BazarListPage } from '@/routes/ledger/BazarListPage'
 import { ContributionsListPage } from '@/routes/ledger/ContributionsListPage'
@@ -32,6 +33,7 @@ export default function App() {
 
           <Route path="/h/:householdId" element={<HouseholdLayout />}>
             <Route index element={<SettlementDashboardPage />} />
+            <Route path="history" element={<LedgerHistoryPage />} />
 
             <Route path="ledger" element={<LedgerPage />}>
               <Route index element={<Navigate to="bazar" replace />} />

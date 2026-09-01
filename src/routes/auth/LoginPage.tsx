@@ -51,7 +51,7 @@ export function LoginPage() {
 
   return (
     <AuthLayout>
-      <h2 className="mb-5 text-lg font-semibold text-ink">Sign in</h2>
+      <h2 className="mb-5 text-lg font-semibold text-ink">Sign In</h2>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <InputField
           label="Email"
@@ -73,13 +73,13 @@ export function LoginPage() {
         />
         {formError && <p className="text-sm text-danger">{formError}</p>}
         <Button type="submit" isLoading={isLoading} className="w-full">
-          Sign in
+          Sign In
         </Button>
       </form>
       <p className="mt-5 text-center text-sm text-muted">
         New here?{' '}
         <Link to="/register" className="font-medium text-primary">
-          Create account
+          Create Account
         </Link>
       </p>
     </AuthLayout>

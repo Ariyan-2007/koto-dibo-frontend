@@ -6,21 +6,17 @@ import { listMembers } from '@/lib/api/households'
 import { cancelBillSplit, getBillSplit, getBillSplitSettlement } from '@/lib/api/billSplits'
 import { canEditEntry } from '@/lib/permissions'
 import { toast, errorMessage } from '@/lib/toast'
+import { BILL_SPLIT_METHOD_LABEL } from '@/lib/billsplit/labels'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { InfoTip } from '@/components/ui/InfoTip'
 import { ArrowLeft, Pencil, Trash } from '@/components/ui/icons'
 import { BandStack } from '@/components/billsplit/BandStack'
 import { EditBillSplitSheet } from './EditBillSplitSheet'
 import { formatDate, formatMoney } from '@/lib/format'
 import { cn } from '@/lib/cn'
-
-const METHOD_LABEL: Record<string, string> = {
-  TariffMetered: 'Tariff metered',
-  EqualSplit: 'Equal split',
-  WeightedSplit: 'Weighted split',
-}
 
 export function BillSplitDetailPage() {
   const { household, currentUserId } = useHouseholdContext()
@@ -76,10 +72,18 @@ export function BillSplitDetailPage() {
         </h1>
         {canEdit && (
           <>
-            <button onClick={() => setEditOpen(true)} className="rounded-pill p-2 text-muted hover:bg-surface-muted hover:text-ink">
+            <button
+              onClick={() => setEditOpen(true)}
+              aria-label="Edit bill split"
+              className="rounded-pill p-3 text-muted hover:bg-surface-muted hover:text-ink"
+            >
               <Pencil width={18} height={18} />
             </button>
-            <button onClick={() => setCancelOpen(true)} className="rounded-pill p-2 text-muted hover:bg-danger-soft hover:text-danger">
+            <button
+              onClick={() => setCancelOpen(true)}
+              aria-label="Cancel bill split"
+              className="rounded-pill p-3 text-muted hover:bg-danger-soft hover:text-danger"
+            >
               <Trash width={18} height={18} />
             </button>
           </>
@@ -87,7 +91,7 @@ export function BillSplitDetailPage() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Badge tone="primary">{METHOD_LABEL[billSplit.splitMethod]}</Badge>
+        <Badge tone="primary">{BILL_SPLIT_METHOD_LABEL[billSplit.splitMethod]}</Badge>
         {billSplit.status === 'Cancelled' && <Badge tone="danger">Cancelled</Badge>}
         <span className="text-sm text-muted">
           {formatDate(billSplit.periodFrom)} – {formatDate(billSplit.periodTo)}
@@ -112,24 +116,62 @@ export function BillSplitDetailPage() {
             <BandStack bands={settlement.bands} currency={billSplit.currency} />
           )}
 
-          <Card className="overflow-hidden">
-            <table className="w-full text-sm">
+          {billSplit.splitMethod === 'TariffMetered' && billSplit.fixedCharges.length > 0 && (
+            <Card className="p-5">
+              <h2 className="mb-1 font-medium text-ink">Fixed Charges</h2>
+              <p className="mb-3 text-sm text-muted">Constant fees billed per connection, split equally across active members — not usage-based.</p>
+              <div className="flex flex-col gap-2">
+                {billSplit.fixedCharges.map((fc, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <span className="text-ink">{fc.label}</span>
+                    <span className="font-medium text-ink">{formatMoney(fc.amount, billSplit.currency)}</span>
+                  </div>
+                ))}
+                <div className="mt-1 flex items-center justify-between border-t border-border pt-2 text-sm font-semibold">
+                  <span className="text-ink">Total</span>
+                  <span className="text-ink">{formatMoney(settlement.fixedChargesTotal, billSplit.currency)}</span>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <Card className="overflow-x-auto">
+            <table className="w-full min-w-125 text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-muted text-left text-muted">
                   <th className="p-3 font-medium">Member</th>
                   {billSplit.splitMethod === 'TariffMetered' && <th className="p-3 font-medium">Usage</th>}
-                  <th className="p-3 font-medium">Attributed</th>
-                  <th className="p-3 font-medium">Shared</th>
+                  <th className="p-3 font-medium">
+                    Attributed
+                    <InfoTip label="Attributed">The portion of the bill driven by this member's own metered usage.</InfoTip>
+                  </th>
+                  <th className="p-3 font-medium">
+                    Shared
+                    <InfoTip label="Shared">
+                      Common-area usage no sub-meter captures, split equally across everyone in the household.
+                    </InfoTip>
+                  </th>
+                  {billSplit.splitMethod === 'TariffMetered' && (
+                    <th className="p-3 font-medium">
+                      Fixed Fee
+                      <InfoTip label="Fixed Fee">
+                        Flat charges like VAT or meter rent — split equally, regardless of how much electricity each person used.
+                      </InfoTip>
+                    </th>
+                  )}
                   <th className="p-3 font-medium text-right">Owed</th>
                 </tr>
               </thead>
               <tbody>
                 {settlement.members.map((m) => (
                   <tr key={m.userId} className="border-b border-border last:border-0">
-                    <td className="p-3 font-medium text-ink">{nameByUser.get(m.userId) ?? '—'}</td>
+                    <td className="max-w-32 truncate p-3 font-medium text-ink">{nameByUser.get(m.userId) ?? 'Former member'}</td>
                     {billSplit.splitMethod === 'TariffMetered' && <td className="p-3 text-ink">{m.usage ?? '—'}</td>}
                     <td className="p-3 text-ink">{formatMoney(m.attributedCost, billSplit.currency)}</td>
                     <td className="p-3 text-ink">{formatMoney(m.sharedCost, billSplit.currency)}</td>
+                    {billSplit.splitMethod === 'TariffMetered' && (
+                      <td className="p-3 text-ink">{formatMoney(m.fixedChargeShare, billSplit.currency)}</td>
+                    )}
                     <td className="p-3 text-right font-medium text-ink">{formatMoney(m.totalOwed, billSplit.currency)}</td>
                   </tr>
                 ))}
@@ -143,9 +185,9 @@ export function BillSplitDetailPage() {
 
       <ConfirmDialog
         open={cancelOpen}
-        title="Cancel this bill split?"
+        title="Cancel This Bill Split?"
         description="It stays visible, struck through, but no longer counts toward anyone's balance."
-        confirmLabel="Cancel split"
+        confirmLabel="Cancel Split"
         danger
         isLoading={cancelMutation.isPending}
         onConfirm={() => cancelMutation.mutate()}

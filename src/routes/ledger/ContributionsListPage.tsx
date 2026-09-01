@@ -99,7 +99,7 @@ export function ContributionsListPage() {
           />
         ))
       ) : (
-        <EmptyState icon={<Wallet width={28} height={28} />} title="No contributions yet" />
+        <EmptyState icon={<Wallet width={28} height={28} />} title="No Contributions Yet" />
       )}
 
       {canAddEntry(household.callerRole) && (
@@ -111,14 +111,14 @@ export function ContributionsListPage() {
           icon={<Plus width={18} height={18} />}
           className="self-start"
         >
-          Add contribution
+          Add Contribution
         </Button>
       )}
 
       <LedgerFormSheet
         open={!!formOpen}
         onClose={() => setFormOpen(null)}
-        title={editingEntry ? 'Edit contribution' : 'New contribution'}
+        title={editingEntry ? 'Edit Contribution' : 'New Contribution'}
         noteLabel="Notes"
         isSubmitting={createMutation.isPending || updateMutation.isPending}
         fieldErrors={fieldErrors}
@@ -135,9 +135,9 @@ export function ContributionsListPage() {
 
       <ConfirmDialog
         open={!!cancelTarget}
-        title="Cancel this entry?"
+        title="Cancel This Entry?"
         description="It stays visible in the list, struck through, but no longer counts toward the ledger."
-        confirmLabel="Cancel entry"
+        confirmLabel="Cancel Entry"
         danger
         isLoading={cancelMutation.isPending}
         onConfirm={() => cancelTarget && cancelMutation.mutate(cancelTarget.id)}

@@ -10,7 +10,7 @@ export function OfflineBadge() {
   if (isOnline && pendingCount === 0) return null
 
   return (
-    <Badge tone={isOnline ? 'primary' : 'danger'} className="gap-1">
+    <Badge tone={isOnline ? 'primary' : 'danger'} className="gap-1" role="status" aria-live="polite">
       <WifiOff width={13} height={13} />
       {!isOnline ? 'Offline' : `Syncing ${pendingCount}…`}
     </Badge>

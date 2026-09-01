@@ -9,7 +9,7 @@ export function LedgerPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-ink">Shared household ledger</h1>
+      <h1 className="text-xl font-semibold text-ink">Shared Household Ledger</h1>
       <div className="flex gap-1 rounded-md bg-surface-muted p-1">
         {[
           { to: `${base}/bazar`, label: 'Bazar' },

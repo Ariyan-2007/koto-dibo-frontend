@@ -159,3 +159,15 @@ export const AlertTriangle = (props: IconProps) => (
     <path d="M12 9v4M12 17h.01" />
   </svg>
 )
+
+export const ArrowUpRight = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M7 17 17 7M8 7h9v9" />
+  </svg>
+)
+
+export const ArrowDownRight = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M7 7l10 10M17 8v9H8" />
+  </svg>
+)

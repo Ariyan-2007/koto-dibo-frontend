@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { GiveTakeStrip } from '@/components/settlement/GiveTakeStrip'
+import { InfoTip } from '@/components/ui/InfoTip'
 import { ChevronLeft, ChevronRight, ArrowLeft, Bowl } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/format'
 
@@ -38,7 +39,7 @@ export function MealSettlementPage() {
         <Link to={`/h/${household.id}/meals`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="text-xl font-semibold text-ink">Meal settlement</h1>
+        <h1 className="text-xl font-semibold text-ink">Meal Settlement</h1>
       </div>
 
       <div className="flex items-center justify-between">
@@ -62,58 +63,75 @@ export function MealSettlementPage() {
       {isLoading ? (
         <SkeletonList rows={3} />
       ) : !calc || calc.mealRate === null ? (
-        <EmptyState icon={<Bowl width={28} height={28} />} title="No meals recorded yet" description="Once meal counts are logged this period, the settlement will show here." />
+        <EmptyState icon={<Bowl width={28} height={28} />} title="No Meals Recorded Yet" description="Once meal counts are logged this period, the settlement will show here." />
+      ) : calc.members.length === 0 ? (
+        <EmptyState icon={<Bowl width={28} height={28} />} title="No Members Yet" description="Add members to this household to start splitting meal costs." />
       ) : (
         <>
           <div className="grid grid-cols-3 gap-3">
-            <SummaryTile label="Food cost" value={formatMoney(calc.foodCost, currency)} />
-            <SummaryTile label="Meal rate" value={calc.mealRate.toFixed(2)} />
+            <SummaryTile label="Food Cost" value={formatMoney(calc.foodCost, currency)} />
+            <SummaryTile label="Meal Rate" value={calc.mealRate.toFixed(2)} hint="Cost per meal unit" />
             <SummaryTile label="Contributions" value={formatMoney(calc.totalContributions, currency)} />
           </div>
 
-          <Card className="overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface-muted text-left text-muted">
-                  <th className="p-3 font-medium">Member</th>
-                  <th className="p-3 font-medium">Units</th>
-                  <th className="p-3 font-medium">Cost</th>
-                  <th className="p-3 font-medium">Contribution</th>
-                  <th className="p-3 font-medium text-right">Give/take</th>
-                </tr>
-              </thead>
-              <tbody>
-                {calc.members.map((m) => (
-                  <tr key={m.userId} className="border-b border-border last:border-0">
-                    <td className="p-3 font-medium text-ink">{nameByUser.get(m.userId) ?? '—'}</td>
-                    <td className="p-3 text-ink">{m.mealUnits}</td>
-                    <td className="p-3 text-ink">{formatMoney(m.mealCost, currency)}</td>
-                    <td className="p-3 text-ink">{formatMoney(m.contribution, currency)}</td>
-                    <td className={`p-3 text-right font-medium ${m.giveTake >= 0 ? 'text-primary' : 'text-danger'}`}>
-                      {m.giveTake >= 0 ? '+' : ''}
-                      {formatMoney(m.giveTake, currency)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
+          {calc.members.length === 1 ? (
+            <p className="rounded-md border border-dashed border-border p-4 text-center text-sm text-muted">
+              With just one member, there's nothing to split — the whole food cost is theirs.
+            </p>
+          ) : (
+            <>
+              <Card className="overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border bg-surface-muted text-left text-muted">
+                      <th className="p-3 font-medium">Member</th>
+                      <th className="p-3 font-medium">Units</th>
+                      <th className="p-3 font-medium">Cost</th>
+                      <th className="p-3 font-medium">Contribution</th>
+                      <th className="p-3 font-medium text-right">
+                        Give/Take
+                        <InfoTip label="Give/Take">
+                          A positive number means the household owes this member money; a negative number means they owe the
+                          household.
+                        </InfoTip>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {calc.members.map((m) => (
+                      <tr key={m.userId} className="border-b border-border last:border-0">
+                        <td className="p-3 font-medium text-ink">{nameByUser.get(m.userId) ?? 'Former member'}</td>
+                        <td className="p-3 text-ink">{m.mealUnits}</td>
+                        <td className="p-3 text-ink">{formatMoney(m.mealCost, currency)}</td>
+                        <td className="p-3 text-ink">{formatMoney(m.contribution, currency)}</td>
+                        <td className={`p-3 text-right font-medium ${m.giveTake >= 0 ? 'text-primary' : 'text-danger'}`}>
+                          {m.giveTake >= 0 ? '+' : ''}
+                          {formatMoney(m.giveTake, currency)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Card>
 
-          <GiveTakeStrip
-            items={calc.members.map((m) => ({ name: nameByUser.get(m.userId) ?? '—', giveTake: m.giveTake }))}
-            currency={currency}
-          />
+              <GiveTakeStrip
+                items={calc.members.map((m) => ({ name: nameByUser.get(m.userId) ?? 'Former member', giveTake: m.giveTake }))}
+                currency={currency}
+              />
+            </>
+          )}
         </>
       )}
     </div>
   )
 }
 
-function SummaryTile({ label, value }: { label: string; value: string }) {
+function SummaryTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <Card className="p-3 text-center">
       <p className="text-xs text-muted">{label}</p>
       <p className="mt-1 font-semibold text-ink">{value}</p>
+      {hint && <p className="mt-0.5 text-[11px] text-muted">{hint}</p>}
     </Card>
   )
 }

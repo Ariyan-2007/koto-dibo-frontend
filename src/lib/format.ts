@@ -16,12 +16,16 @@ export function formatMonthDay(isoDate: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export function todayIso(): string {
-  return new Date().toISOString().slice(0, 10)
-}
-
 function toIso(y: number, m: number, d: number): string {
   return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+/** Local calendar date, not UTC — a UTC-based `toISOString()` slice reads as "yesterday" for
+ * timezones ahead of UTC (e.g. Asia/Dhaka, UTC+6) during their early-morning hours, which made
+ * every cell in the meal grid register as "future" and become uneditable during that window. */
+export function todayIso(): string {
+  const d = new Date()
+  return toIso(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
 export function getMonthRange(year: number, month: number): { from: string; to: string; label: string; daysInMonth: number } {

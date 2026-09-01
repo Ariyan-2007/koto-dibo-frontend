@@ -7,18 +7,20 @@ import type { BazarPurchaseDto } from '@/lib/api/types'
 import { canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
+import { currentMonthKey } from '@/lib/ledger/period'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
 import { LedgerFormSheet, type LedgerFormValues } from '@/components/ledger/LedgerFormSheet'
+import { MonthEndReconciliationCard } from '@/components/ledger/MonthEndReconciliationCard'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
-import { Cart, Plus } from '@/components/ui/icons'
+import { Cart, Plus, Wallet } from '@/components/ui/icons'
 
 export function BazarListPage() {
   const { household, currentUserId } = useHouseholdContext()
   const queryClient = useQueryClient()
-  const [formOpen, setFormOpen] = useState<'create' | BazarPurchaseDto | null>(null)
+  const [formOpen, setFormOpen] = useState<'create' | 'leftover' | BazarPurchaseDto | null>(null)
   const [cancelTarget, setCancelTarget] = useState<BazarPurchaseDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
@@ -29,13 +31,18 @@ export function BazarListPage() {
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
   const nameByUser = useMemo(() => new Map((members ?? []).map((m) => [m.userId, m.name])), [members])
 
+  const hasLeftoverThisMonth = useMemo(
+    () => (entries ?? []).some((e) => e.status === 'Active' && e.amount < 0 && e.date.slice(0, 7) === currentMonthKey()),
+    [entries],
+  )
+
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['bazar', household.id] })
 
   const createMutation = useMutation({
     mutationFn: (values: LedgerFormValues) => createBazar(household.id, { ...values, note: values.note || undefined }),
-    onSuccess: () => {
+    onSuccess: (created) => {
       invalidate()
-      toast.success('Bazar entry added')
+      toast.success(created.amount < 0 ? 'Leftover recorded' : 'Bazar entry added')
       setFormOpen(null)
     },
     onError: (err) => handleFormError(err),
@@ -78,10 +85,21 @@ export function BazarListPage() {
     }
   }
 
-  const editingEntry = formOpen && formOpen !== 'create' ? formOpen : null
+  const editingEntry = formOpen && formOpen !== 'create' && formOpen !== 'leftover' ? formOpen : null
+  const isLeftoverMode = formOpen === 'leftover'
 
   return (
     <div className="flex flex-col gap-3">
+      {canAddEntry(household.callerRole) && !hasLeftoverThisMonth && (
+        <MonthEndReconciliationCard
+          household={household}
+          onRecordLeftover={() => {
+            setFieldErrors({})
+            setFormOpen('leftover')
+          }}
+        />
+      )}
+
       {isLoading ? (
         <SkeletonList />
       ) : entries && entries.length > 0 ? (
@@ -99,28 +117,43 @@ export function BazarListPage() {
           />
         ))
       ) : (
-        <EmptyState icon={<Cart width={28} height={28} />} title="No bazar entries yet" />
+        <EmptyState icon={<Cart width={28} height={28} />} title="No Bazar Entries Yet" />
       )}
 
       {canAddEntry(household.callerRole) && (
-        <Button
-          onClick={() => {
-            setFieldErrors({})
-            setFormOpen('create')
-          }}
-          icon={<Plus width={18} height={18} />}
-          className="self-start"
-        >
-          Add bazar entry
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setFieldErrors({})
+              setFormOpen('create')
+            }}
+            icon={<Plus width={18} height={18} />}
+          >
+            Add Bazar Entry
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setFieldErrors({})
+              setFormOpen('leftover')
+            }}
+            icon={<Wallet width={18} height={18} />}
+          >
+            Record Leftover
+          </Button>
+        </div>
       )}
 
       <LedgerFormSheet
         open={!!formOpen}
         onClose={() => setFormOpen(null)}
-        title={editingEntry ? 'Edit bazar entry' : 'New bazar entry'}
+        title={editingEntry ? 'Edit Bazar Entry' : isLeftoverMode ? 'Record Leftover' : 'New Bazar Entry'}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
         fieldErrors={fieldErrors}
+        signMode={isLeftoverMode ? 'negative' : 'positive'}
+        amountLabel={isLeftoverMode ? 'Leftover amount' : undefined}
+        amountHint={isLeftoverMode ? "Recorded as a negative entry — it reduces this month's food-cost baseline, not adds to it." : undefined}
+        noteLabel={isLeftoverMode ? "What's this for?" : 'Note'}
         initial={
           editingEntry
             ? { date: editingEntry.date, amount: editingEntry.amount, currency: editingEntry.currency, note: editingEntry.note ?? '' }
@@ -134,9 +167,9 @@ export function BazarListPage() {
 
       <ConfirmDialog
         open={!!cancelTarget}
-        title="Cancel this entry?"
+        title="Cancel This Entry?"
         description="It stays visible in the list, struck through, but no longer counts toward the ledger."
-        confirmLabel="Cancel entry"
+        confirmLabel="Cancel Entry"
         danger
         isLoading={cancelMutation.isPending}
         onConfirm={() => cancelTarget && cancelMutation.mutate(cancelTarget.id)}

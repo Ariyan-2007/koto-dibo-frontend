@@ -99,6 +99,11 @@ export interface BillSplitMemberInputDto {
   value: number
 }
 
+export interface FixedChargeDto {
+  label: string
+  amount: number
+}
+
 export interface BillSplitDto {
   id: string
   householdId: string
@@ -113,6 +118,7 @@ export interface BillSplitDto {
   mainMeterUsage: number | null
   totalAmount: number | null
   memberInputs: BillSplitMemberInputDto[]
+  fixedCharges: FixedChargeDto[]
   notes: string | null
   status: FinancialEntryStatus
   createdAt: string
@@ -134,6 +140,7 @@ export interface BillSplitMemberSettlementDto {
   usage: number | null
   attributedCost: number
   sharedCost: number
+  fixedChargeShare: number
   totalOwed: number
 }
 
@@ -142,6 +149,7 @@ export interface BillSplitSettlementDto {
   totalAmount: number
   attributedCost: number
   sharedCost: number
+  fixedChargesTotal: number
   bands: BillSplitBandDto[]
   members: BillSplitMemberSettlementDto[]
   calculationVersion: string

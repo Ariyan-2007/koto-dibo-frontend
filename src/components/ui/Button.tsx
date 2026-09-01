@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -23,18 +23,13 @@ const sizeClasses: Record<Size, string> = {
   sm: 'h-9 px-3 text-sm gap-1.5',
 }
 
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  isLoading = false,
-  icon,
-  className,
-  children,
-  disabled,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { variant = 'primary', size = 'md', isLoading = false, icon, className, children, disabled, ...props },
+  ref,
+) {
   return (
     <button
+      ref={ref}
       className={cn(
         'inline-flex items-center justify-center rounded-md font-medium transition-colors',
         'focus-visible:outline-none focus-visible:shadow-focus disabled:opacity-50 disabled:pointer-events-none',
@@ -53,4 +48,4 @@ export function Button({
       {children}
     </button>
   )
-}
+})

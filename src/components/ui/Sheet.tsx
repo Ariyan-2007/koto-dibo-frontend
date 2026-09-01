@@ -30,7 +30,9 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
             <X />
           </button>
         </div>
-        <div className="overflow-y-auto px-5 py-4 pb-safe">{children}</div>
+        <div className="overflow-y-auto px-5 py-4" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          {children}
+        </div>
       </div>
     </div>
   )

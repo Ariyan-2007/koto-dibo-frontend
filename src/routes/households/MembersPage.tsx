@@ -13,10 +13,17 @@ import { SkeletonList } from '@/components/ui/Skeleton'
 import { Sheet } from '@/components/ui/Sheet'
 import { InputField, SelectField } from '@/components/ui/Field'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { ArrowLeft, Plus } from '@/components/ui/icons'
+import { ArrowLeft, Plus, ChevronDown } from '@/components/ui/icons'
 import { Link } from 'react-router-dom'
 
 const ROLES: HouseholdRole[] = ['Manager', 'Member', 'Viewer']
+
+const ROLE_DESCRIPTIONS: Record<HouseholdRole, string> = {
+  Owner: 'Full control, including archiving the household. Can\'t be removed or changed here.',
+  Manager: 'Can do everything an Owner can, except remove or demote the Owner or another Manager.',
+  Member: 'Can add and edit their own entries — bazar, contributions, meals, bill splits.',
+  Viewer: 'Can see everything but can\'t add or change anything — good for keeping someone in the loop.',
+}
 
 export function MembersPage() {
   const { household, currentUserId } = useHouseholdContext()
@@ -24,6 +31,7 @@ export function MembersPage() {
   const canManage = canManageHousehold(household.callerRole)
   const [addOpen, setAddOpen] = useState(false)
   const [removeTarget, setRemoveTarget] = useState<HouseholdMemberDto | null>(null)
+  const [legendOpen, setLegendOpen] = useState(false)
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['members', household.id],
@@ -60,6 +68,27 @@ export function MembersPage() {
         </Link>
         <h1 className="text-xl font-semibold text-ink">Members</h1>
       </div>
+
+      <Card className="p-4">
+        <button
+          onClick={() => setLegendOpen((o) => !o)}
+          aria-expanded={legendOpen}
+          className="flex w-full items-center justify-between text-left text-sm font-medium text-ink"
+        >
+          What can each role do?
+          <ChevronDown width={16} height={16} className={`text-muted transition-transform ${legendOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {legendOpen && (
+          <dl className="mt-3 flex flex-col gap-2 text-sm">
+            {(['Owner', 'Manager', 'Member', 'Viewer'] as HouseholdRole[]).map((r) => (
+              <div key={r}>
+                <dt className="font-medium text-ink">{r}</dt>
+                <dd className="text-xs text-muted">{ROLE_DESCRIPTIONS[r]}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </Card>
 
       {isLoading ? (
         <SkeletonList rows={3} />
@@ -103,7 +132,7 @@ export function MembersPage() {
 
       {canManage && (
         <Button onClick={() => setAddOpen(true)} icon={<Plus width={18} height={18} />} className="self-start">
-          Add member
+          Add Member
         </Button>
       )}
 
@@ -111,7 +140,7 @@ export function MembersPage() {
 
       <ConfirmDialog
         open={!!removeTarget}
-        title={`Remove ${removeTarget?.name ?? 'this member'}?`}
+        title={`Remove ${removeTarget?.name ?? 'This Member'}?`}
         description="They'll lose access to this household's ledgers, meals, and bill splits."
         confirmLabel="Remove"
         danger
@@ -144,7 +173,7 @@ function AddMemberSheet({ householdId, open, onClose }: { householdId: string; o
   })
 
   return (
-    <Sheet open={open} onClose={onClose} title="Add member">
+    <Sheet open={open} onClose={onClose} title="Add Member">
       <form
         onSubmit={(e) => {
           e.preventDefault()

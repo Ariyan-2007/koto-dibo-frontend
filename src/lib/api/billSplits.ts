@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { BillSplitDto, BillSplitMemberInputDto, BillSplitMethod, BillSplitSettlementDto, FinancialEntryStatus } from './types'
+import type { BillSplitDto, BillSplitMemberInputDto, BillSplitMethod, BillSplitSettlementDto, FinancialEntryStatus, FixedChargeDto } from './types'
 
 export interface CreateBillSplitInput {
   title: string
@@ -12,6 +12,8 @@ export interface CreateBillSplitInput {
   mainMeterUsage?: number
   totalAmount?: number
   memberInputs: BillSplitMemberInputDto[]
+  /** Only accepted for `TariffMetered` ("Electricity Bill (Postpaid)") — ignored, never persisted, for the other two methods. */
+  fixedCharges?: FixedChargeDto[]
   notes?: string
 }
 
@@ -20,6 +22,8 @@ export interface UpdateBillSplitInput {
   mainMeterUsage?: number
   totalAmount?: number
   memberInputs?: BillSplitMemberInputDto[]
+  /** Full replacement array — omit to leave existing charges untouched, there's no add/remove-one endpoint. */
+  fixedCharges?: FixedChargeDto[]
   notes?: string
 }
 

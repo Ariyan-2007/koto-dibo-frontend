@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Button } from './Button'
 
 interface ConfirmDialogProps {
@@ -23,6 +24,19 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const cancelRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    cancelRef.current?.focus()
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
   if (!open) return null
 
   return (
@@ -31,13 +45,18 @@ export function ConfirmDialog({
         role="alertdialog"
         aria-modal="true"
         aria-label={title}
+        aria-describedby={description ? 'confirm-dialog-description' : undefined}
         className="w-full max-w-sm rounded-t-lg bg-surface p-6 shadow-sheet md:rounded-lg md:shadow-card"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-semibold text-ink">{title}</h2>
-        {description && <p className="mt-2 text-sm text-muted">{description}</p>}
+        {description && (
+          <p id="confirm-dialog-description" className="mt-2 text-sm text-muted">
+            {description}
+          </p>
+        )}
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
+          <Button ref={cancelRef} variant="secondary" onClick={onCancel} disabled={isLoading}>
             {cancelLabel}
           </Button>
           <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm} isLoading={isLoading}>

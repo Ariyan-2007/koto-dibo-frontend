@@ -107,7 +107,7 @@ export function HouseholdSettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Household settings</h1>
+        <h1 className="text-xl font-semibold text-ink">Household Settings</h1>
         <div className="mt-1 flex items-center gap-2">
           <Badge tone="primary">{household.callerRole}</Badge>
           {household.status === 'Archived' && <Badge tone="danger">Archived</Badge>}
@@ -125,8 +125,11 @@ export function HouseholdSettingsPage() {
       </Link>
 
       <Card className="p-5">
-        <h2 className="mb-4 font-medium text-ink">Household details</h2>
-        <form onSubmit={onSave} className="flex flex-col gap-4">
+        <h2 className="mb-1 font-medium text-ink">Household Details</h2>
+        {!canManage && (
+          <p className="mb-3 text-xs text-muted">Only the Owner or a Manager can change these settings.</p>
+        )}
+        <form onSubmit={onSave} className="mt-3 flex flex-col gap-4">
           <InputField
             label="Name"
             value={name}
@@ -144,7 +147,7 @@ export function HouseholdSettingsPage() {
           />
           {canManage && (
             <Button type="submit" isLoading={saveMutation.isPending} className="self-start">
-              Save changes
+              Save Changes
             </Button>
           )}
         </form>
@@ -162,7 +165,7 @@ export function HouseholdSettingsPage() {
             variant="secondary"
             onClick={() => setConfirmAction(household.status === 'Archived' ? 'restore' : 'archive')}
           >
-            {household.status === 'Archived' ? 'Restore household' : 'Archive household'}
+            {household.status === 'Archived' ? 'Restore Household' : 'Archive Household'}
           </Button>
         </Card>
       )}
@@ -171,20 +174,20 @@ export function HouseholdSettingsPage() {
         <h2 className="mb-3 font-medium text-ink">Account</h2>
         <div className="flex flex-col gap-2">
           <Button variant="secondary" onClick={handleLogout} icon={<LogOut width={16} height={16} />} className="justify-start">
-            Log out
+            Log Out
           </Button>
           <Button variant="ghost" onClick={handleLogoutAll} className="justify-start text-danger">
-            Log out of all devices
+            Log Out of All Devices
           </Button>
           <Button variant="ghost" onClick={() => setConfirmAction('leave')} className="justify-start text-danger">
-            Leave household
+            Leave Household
           </Button>
         </div>
       </Card>
 
       <ConfirmDialog
         open={confirmAction === 'archive'}
-        title="Archive this household?"
+        title="Archive This Household?"
         description="No one will be able to add entries or change membership until it's restored."
         confirmLabel="Archive"
         danger
@@ -194,7 +197,7 @@ export function HouseholdSettingsPage() {
       />
       <ConfirmDialog
         open={confirmAction === 'restore'}
-        title="Restore this household?"
+        title="Restore This Household?"
         confirmLabel="Restore"
         isLoading={restoreMutation.isPending}
         onConfirm={() => restoreMutation.mutate()}
@@ -202,7 +205,7 @@ export function HouseholdSettingsPage() {
       />
       <ConfirmDialog
         open={confirmAction === 'leave'}
-        title={isLastActiveOwner ? 'Leave and archive this household?' : 'Leave this household?'}
+        title={isLastActiveOwner ? 'Leave and Archive This Household?' : 'Leave This Household?'}
         description={
           isLastActiveOwner
             ? "You're the only member — leaving will archive the household."

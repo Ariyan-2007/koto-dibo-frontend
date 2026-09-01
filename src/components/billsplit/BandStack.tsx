@@ -5,7 +5,7 @@ import { formatMoney } from '@/lib/format'
 export function BandStack({ bands, currency }: { bands: BillSplitBandDto[]; currency: string }) {
   return (
     <Card className="p-5">
-      <h2 className="mb-1 font-medium text-ink">Why it cost this much</h2>
+      <h2 className="mb-1 font-medium text-ink">Why It Cost This Much</h2>
       <p className="mb-4 text-sm text-muted">Band stack — attributed usage is billed first against the cheapest units.</p>
       <div className="flex flex-col gap-3">
         {bands.map((band, i) => {
