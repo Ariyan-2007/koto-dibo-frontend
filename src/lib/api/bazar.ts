@@ -20,6 +20,10 @@ export function createBazar(householdId: string, input: BazarInput) {
   return api.post<BazarPurchaseDto>(`/households/${householdId}/bazar`, input)
 }
 
+export function createBazarFor(householdId: string, userId: string, input: BazarInput) {
+  return api.post<BazarPurchaseDto>(`/households/${householdId}/bazar/${userId}`, input)
+}
+
 export function updateBazar(householdId: string, purchaseId: string, input: Partial<BazarInput>) {
   return api.patch<BazarPurchaseDto>(`/households/${householdId}/bazar/${purchaseId}`, input)
 }

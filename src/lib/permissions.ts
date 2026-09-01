@@ -17,6 +17,10 @@ export function canRecordMealForOthers(role: HouseholdRole): boolean {
   return role === 'Owner' || role === 'Manager'
 }
 
+export function canAddBazarForOthers(role: HouseholdRole): boolean {
+  return role === 'Owner' || role === 'Manager'
+}
+
 export function canManageHousehold(role: HouseholdRole): boolean {
   return role === 'Owner' || role === 'Manager'
 }

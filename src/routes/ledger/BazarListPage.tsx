@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
 import { listMembers } from '@/lib/api/households'
-import { cancelBazar, createBazar, listBazar, updateBazar } from '@/lib/api/bazar'
+import { cancelBazar, createBazar, createBazarFor, listBazar, updateBazar } from '@/lib/api/bazar'
 import type { BazarPurchaseDto } from '@/lib/api/types'
-import { canAddEntry, canEditEntry } from '@/lib/permissions'
+import { canAddBazarForOthers, canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { currentMonthKey } from '@/lib/ledger/period'
@@ -38,8 +38,13 @@ export function BazarListPage() {
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['bazar', household.id] })
 
+  const canAddForOthers = canAddBazarForOthers(household.callerRole)
+
   const createMutation = useMutation({
-    mutationFn: (values: LedgerFormValues) => createBazar(household.id, { ...values, note: values.note || undefined }),
+    mutationFn: ({ userId, ...values }: LedgerFormValues) => {
+      const input = { ...values, note: values.note || undefined }
+      return userId && userId !== currentUserId ? createBazarFor(household.id, userId, input) : createBazar(household.id, input)
+    },
     onSuccess: (created) => {
       invalidate()
       toast.success(created.amount < 0 ? 'Leftover recorded' : 'Bazar entry added')
@@ -154,6 +159,9 @@ export function BazarListPage() {
         amountLabel={isLeftoverMode ? 'Leftover amount' : undefined}
         amountHint={isLeftoverMode ? "Recorded as a negative entry — it reduces this month's food-cost baseline, not adds to it." : undefined}
         noteLabel={isLeftoverMode ? "What's this for?" : 'Note'}
+        showMemberPicker={canAddForOthers && formOpen === 'create'}
+        members={members}
+        currentUserId={currentUserId}
         initial={
           editingEntry
             ? { date: editingEntry.date, amount: editingEntry.amount, currency: editingEntry.currency, note: editingEntry.note ?? '' }
