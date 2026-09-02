@@ -11,6 +11,7 @@ import { SkeletonList, Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { InfoTip } from '@/components/ui/InfoTip'
 import { GiveTakeStrip } from '@/components/settlement/GiveTakeStrip'
+import { HouseholdBalanceCard } from '@/components/household/HouseholdBalanceCard'
 import { ChevronLeft, ChevronRight, Bowl, Scale, ArrowUpRight, ArrowDownRight, Check } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/format'
 
@@ -37,6 +38,8 @@ export function SettlementDashboardPage() {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold text-ink">Where Everyone Stands</h1>
+
+      <HouseholdBalanceCard householdId={household.id} />
 
       <div className="flex items-center justify-between">
         <button

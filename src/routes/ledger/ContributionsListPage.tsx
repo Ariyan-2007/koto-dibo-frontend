@@ -90,7 +90,8 @@ export function ContributionsListPage() {
             key={entry.id}
             entry={{ ...entry, note: entry.notes }}
             byName={nameByUser.get(entry.contributedByUserId) ?? '—'}
-            canEdit={canEditEntry(household.callerRole, entry.contributedByUserId, currentUserId)}
+            householdId={household.id}
+            canEdit={entry.sourceType !== 'AutoFromBazar' && canEditEntry(household.callerRole, entry.contributedByUserId, currentUserId)}
             onEdit={() => {
               setFieldErrors({})
               setFormOpen(entry)

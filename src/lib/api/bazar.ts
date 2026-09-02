@@ -1,11 +1,12 @@
 import { api } from './client'
-import type { BazarPurchaseDto, FinancialEntryStatus } from './types'
+import type { BazarFundingSource, BazarPurchaseDto, FinancialEntryStatus } from './types'
 
 export interface BazarInput {
   date: string
   amount: number
   currency: string
   note?: string
+  fundingSource?: BazarFundingSource
 }
 
 export function listBazar(householdId: string, filter?: { from?: string; to?: string; status?: FinancialEntryStatus }) {

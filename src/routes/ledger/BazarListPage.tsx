@@ -23,6 +23,7 @@ export function BazarListPage() {
   const [formOpen, setFormOpen] = useState<'create' | 'leftover' | BazarPurchaseDto | null>(null)
   const [cancelTarget, setCancelTarget] = useState<BazarPurchaseDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [formError, setFormError] = useState<string | undefined>()
 
   const { data: entries, isLoading } = useQuery({
     queryKey: ['bazar', household.id],
@@ -78,7 +79,11 @@ export function BazarListPage() {
   })
 
   function handleFormError(err: unknown) {
-    if (err instanceof ApiError && err.errors) {
+    if (err instanceof ApiError && err.status === 409) {
+      // Balance changed between the fetch and submit — show the server's own message inline
+      // rather than a generic failure toast.
+      setFormError(err.message)
+    } else if (err instanceof ApiError && err.errors) {
       setFieldErrors({
         date: err.fieldError('date') ?? '',
         amount: err.fieldError('amount') ?? '',
@@ -100,6 +105,7 @@ export function BazarListPage() {
           household={household}
           onRecordLeftover={() => {
             setFieldErrors({})
+            setFormError(undefined)
             setFormOpen('leftover')
           }}
         />
@@ -113,9 +119,11 @@ export function BazarListPage() {
             key={entry.id}
             entry={entry}
             byName={nameByUser.get(entry.purchasedByUserId) ?? '—'}
+            householdId={household.id}
             canEdit={canEditEntry(household.callerRole, entry.purchasedByUserId, currentUserId)}
             onEdit={() => {
               setFieldErrors({})
+              setFormError(undefined)
               setFormOpen(entry)
             }}
             onCancel={() => setCancelTarget(entry)}
@@ -130,6 +138,7 @@ export function BazarListPage() {
           <Button
             onClick={() => {
               setFieldErrors({})
+              setFormError(undefined)
               setFormOpen('create')
             }}
             icon={<Plus width={18} height={18} />}
@@ -140,6 +149,7 @@ export function BazarListPage() {
             variant="secondary"
             onClick={() => {
               setFieldErrors({})
+              setFormError(undefined)
               setFormOpen('leftover')
             }}
             icon={<Wallet width={18} height={18} />}
@@ -155,16 +165,25 @@ export function BazarListPage() {
         title={editingEntry ? 'Edit Bazar Entry' : isLeftoverMode ? 'Record Leftover' : 'New Bazar Entry'}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
         fieldErrors={fieldErrors}
+        formError={formError}
         signMode={isLeftoverMode ? 'negative' : 'positive'}
         amountLabel={isLeftoverMode ? 'Leftover amount' : undefined}
         amountHint={isLeftoverMode ? "Recorded as a negative entry — it reduces this month's food-cost baseline, not adds to it." : undefined}
         noteLabel={isLeftoverMode ? "What's this for?" : 'Note'}
         showMemberPicker={canAddForOthers && formOpen === 'create'}
+        showFundingSourceChoice={!isLeftoverMode}
+        householdId={household.id}
         members={members}
         currentUserId={currentUserId}
         initial={
           editingEntry
-            ? { date: editingEntry.date, amount: editingEntry.amount, currency: editingEntry.currency, note: editingEntry.note ?? '' }
+            ? {
+                date: editingEntry.date,
+                amount: editingEntry.amount,
+                currency: editingEntry.currency,
+                note: editingEntry.note ?? '',
+                fundingSource: editingEntry.fundingSource,
+              }
             : undefined
         }
         onSubmit={(values) => {

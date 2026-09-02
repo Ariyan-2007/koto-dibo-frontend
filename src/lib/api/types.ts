@@ -5,6 +5,8 @@ export type HouseholdRole = 'Owner' | 'Manager' | 'Member' | 'Viewer'
 export type HouseholdStatus = 'Active' | 'Archived'
 export type FinancialEntryStatus = 'Active' | 'Cancelled'
 export type BillSplitMethod = 'TariffMetered' | 'EqualSplit' | 'WeightedSplit'
+export type BazarFundingSource = 'Personal' | 'HouseholdFund'
+export type ContributionSourceType = 'Manual' | 'AutoFromBazar'
 
 export interface AuthResponse {
   accessToken: string
@@ -45,6 +47,8 @@ export interface BazarPurchaseDto {
   amount: number
   currency: string
   note: string | null
+  fundingSource: BazarFundingSource
+  linkedContributionId: string | null
   status: FinancialEntryStatus
   createdAt: string
   updatedAt: string
@@ -58,9 +62,20 @@ export interface ContributionDto {
   amount: number
   currency: string
   notes: string | null
+  sourceType: ContributionSourceType
+  sourceBazarPurchaseId: string | null
   status: FinancialEntryStatus
   createdAt: string
   updatedAt: string
+}
+
+export interface HouseholdBalanceDto {
+  householdId: string
+  totalContributions: number
+  totalSpentFromFund: number
+  currentBalance: number
+  currency: string
+  asOf: string
 }
 
 export interface DailyMealEntryDto {
