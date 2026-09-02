@@ -1,46 +1,22 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { listHouseholds } from '@/lib/api/households'
-import { logout } from '@/lib/api/auth'
-import { useAuthStore } from '@/lib/auth/authStore'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
-import { Home, LogOut, Plus, Users, Wallet } from '@/components/ui/icons'
-import { CreateHouseholdSheet } from './CreateHouseholdSheet'
+import { Home, Plus, Users } from '@/components/ui/icons'
+import { CreateHouseholdSheet } from '@/routes/households/CreateHouseholdSheet'
 
-export function HouseholdListPage() {
-  const navigate = useNavigate()
-  const clearAuth = useAuthStore((s) => s.clear)
+export function HouseholdsTab() {
   const [createOpen, setCreateOpen] = useState(false)
-
   const { data: households, isLoading } = useQuery({ queryKey: ['households'], queryFn: listHouseholds })
 
-  async function handleLogout() {
-    await logout()
-    clearAuth()
-    navigate('/login', { replace: true })
-  }
-
   return (
-    <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8">
-      <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-ink">Your Households</h1>
-        <div className="flex items-center gap-3">
-          <Link to="/personal" className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-            <Wallet width={16} height={16} />
-            Personal
-          </Link>
-          <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-            <LogOut width={16} height={16} />
-            Log Out
-          </button>
-        </div>
-      </div>
-      <Link to="/join" className="mb-6 text-sm font-medium text-primary">
+    <div className="flex flex-col gap-4 pb-20">
+      <Link to="/join" className="text-sm font-medium text-primary">
         Have an invite code? Join a household →
       </Link>
 
@@ -78,7 +54,11 @@ export function HouseholdListPage() {
         />
       )}
 
-      <Button onClick={() => setCreateOpen(true)} className="fixed bottom-6 right-6 shadow-card" icon={<Plus width={18} height={18} />}>
+      <Button
+        onClick={() => setCreateOpen(true)}
+        className="fixed bottom-6 right-6 shadow-card"
+        icon={<Plus width={18} height={18} />}
+      >
         New Household
       </Button>
 

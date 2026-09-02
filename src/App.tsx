@@ -1,13 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { BootstrapGate, RedirectIfAuthed, RequireAuth } from '@/routes/RequireAuth'
 import { HouseholdLayout } from '@/routes/HouseholdLayout'
-import { RootRedirect } from '@/routes/RootRedirect'
 import { Toaster } from '@/components/ui/Toaster'
 import { PWAUpdatePrompt } from '@/components/ui/PWAUpdatePrompt'
 
 import { LoginPage } from '@/routes/auth/LoginPage'
 import { RegisterPage } from '@/routes/auth/RegisterPage'
-import { HouseholdListPage } from '@/routes/households/HouseholdListPage'
 import { SettlementDashboardPage } from '@/routes/settlement/SettlementDashboardPage'
 import { LedgerHistoryPage } from '@/routes/settlement/LedgerHistoryPage'
 import { LedgerPage } from '@/routes/ledger/LedgerPage'
@@ -23,7 +21,8 @@ import { MembersPage } from '@/routes/households/MembersPage'
 import { InviteMemberPage } from '@/routes/households/InviteMemberPage'
 import { JoinHouseholdPage } from '@/routes/invites/JoinHouseholdPage'
 import { InviteAcceptPage } from '@/routes/invites/InviteAcceptPage'
-import { PersonalLayout } from '@/routes/personal/PersonalLayout'
+import { DashboardLayout } from '@/routes/dashboard/DashboardLayout'
+import { HouseholdsTab } from '@/routes/dashboard/HouseholdsTab'
 import { ExpensesPage } from '@/routes/personal/ExpensesPage'
 import { BudgetsPage } from '@/routes/personal/BudgetsPage'
 
@@ -35,13 +34,12 @@ export default function App() {
         <Route path="/register" element={<RedirectIfAuthed><RegisterPage /></RedirectIfAuthed>} />
 
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/households" element={<HouseholdListPage />} />
           <Route path="/join" element={<JoinHouseholdPage />} />
           <Route path="/invites/:code" element={<InviteAcceptPage />} />
 
-          <Route path="/personal" element={<PersonalLayout />}>
-            <Route index element={<Navigate to="expenses" replace />} />
+          <Route path="/" element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/households" replace />} />
+            <Route path="households" element={<HouseholdsTab />} />
             <Route path="expenses" element={<ExpensesPage />} />
             <Route path="budget" element={<BudgetsPage />} />
           </Route>

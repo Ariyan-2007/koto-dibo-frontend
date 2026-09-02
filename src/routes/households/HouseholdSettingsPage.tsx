@@ -114,7 +114,7 @@ export function HouseholdSettingsPage() {
         </div>
       </div>
 
-      <Link to="/personal">
+      <Link to="/expenses">
         <Card className="flex items-center justify-between p-4">
           <span className="flex items-center gap-2 font-medium text-ink">
             <Wallet width={18} height={18} />
