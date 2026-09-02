@@ -3,6 +3,7 @@ import { BootstrapGate, RedirectIfAuthed, RequireAuth } from '@/routes/RequireAu
 import { HouseholdLayout } from '@/routes/HouseholdLayout'
 import { RootRedirect } from '@/routes/RootRedirect'
 import { Toaster } from '@/components/ui/Toaster'
+import { PWAUpdatePrompt } from '@/components/ui/PWAUpdatePrompt'
 
 import { LoginPage } from '@/routes/auth/LoginPage'
 import { RegisterPage } from '@/routes/auth/RegisterPage'
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
+      <PWAUpdatePrompt />
     </BootstrapGate>
   )
 }
