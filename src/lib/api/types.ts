@@ -220,6 +220,20 @@ export interface HouseholdSettlementDto {
   calculationVersion: string
 }
 
+export interface ExpenseDto {
+  id: string
+  amount: number
+  category: string
+  description: string
+  date: string
+}
+
+export interface BudgetDto {
+  id: string
+  period: string
+  amount: number
+}
+
 export interface ApiErrorEnvelope {
   status: number
   title: string

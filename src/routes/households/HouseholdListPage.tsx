@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
-import { Home, LogOut, Plus, Users } from '@/components/ui/icons'
+import { Home, LogOut, Plus, Users, Wallet } from '@/components/ui/icons'
 import { CreateHouseholdSheet } from './CreateHouseholdSheet'
 
 export function HouseholdListPage() {
@@ -29,10 +29,16 @@ export function HouseholdListPage() {
     <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8">
       <div className="mb-1 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-ink">Your Households</h1>
-        <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-          <LogOut width={16} height={16} />
-          Log Out
-        </button>
+        <div className="flex items-center gap-3">
+          <Link to="/personal" className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
+            <Wallet width={16} height={16} />
+            Personal
+          </Link>
+          <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
+            <LogOut width={16} height={16} />
+            Log Out
+          </button>
+        </div>
       </div>
       <Link to="/join" className="mb-6 text-sm font-medium text-primary">
         Have an invite code? Join a household →

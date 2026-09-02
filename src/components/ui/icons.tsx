@@ -211,6 +211,13 @@ export const Maximize = (props: IconProps) => (
   </svg>
 )
 
+export const Receipt = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M6 2h12a1 1 0 0 1 1 1v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V3a1 1 0 0 1 1-1Z" />
+    <path d="M9 7h6M9 11h6M9 15h3" />
+  </svg>
+)
+
 export const RefreshCw = (props: IconProps) => (
   <svg {...base(props)}>
     <path d="M3 12a9 9 0 0 1 15.3-6.4L21 8M21 3v5h-5" />

@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import type { HouseholdDto } from '@/lib/api/types'
 import { navItems } from './nav'
 import { HouseholdSwitcher } from './HouseholdSwitcher'
 import { OfflineBadge } from './OfflineBadge'
+import { Wallet } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 
 export function Sidebar({ household }: { household: HouseholdDto }) {
@@ -30,6 +31,13 @@ export function Sidebar({ household }: { household: HouseholdDto }) {
         ))}
       </nav>
       <div className="border-t border-border p-3">
+        <Link
+          to="/personal"
+          className="mb-2 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface-muted"
+        >
+          <Wallet width={19} height={19} />
+          Personal Finance
+        </Link>
         <OfflineBadge />
       </div>
     </aside>

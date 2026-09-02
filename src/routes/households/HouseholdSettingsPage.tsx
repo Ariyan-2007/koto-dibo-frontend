@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/Badge'
 import { InputField, TextareaField } from '@/components/ui/Field'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Link } from 'react-router-dom'
-import { Users, LogOut, ChevronRight, UserPlus } from '@/components/ui/icons'
+import { Users, LogOut, ChevronRight, UserPlus, Wallet } from '@/components/ui/icons'
 
 export function HouseholdSettingsPage() {
   const { household } = useHouseholdContext()
@@ -113,6 +113,16 @@ export function HouseholdSettingsPage() {
           {household.status === 'Archived' && <Badge tone="danger">Archived</Badge>}
         </div>
       </div>
+
+      <Link to="/personal">
+        <Card className="flex items-center justify-between p-4">
+          <span className="flex items-center gap-2 font-medium text-ink">
+            <Wallet width={18} height={18} />
+            Personal Finance
+          </span>
+          <ChevronRight width={18} height={18} className="text-muted" />
+        </Card>
+      </Link>
 
       <Link to={`/h/${household.id}/settings/members`}>
         <Card className="flex items-center justify-between p-4">

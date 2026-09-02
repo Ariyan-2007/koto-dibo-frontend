@@ -23,6 +23,9 @@ import { MembersPage } from '@/routes/households/MembersPage'
 import { InviteMemberPage } from '@/routes/households/InviteMemberPage'
 import { JoinHouseholdPage } from '@/routes/invites/JoinHouseholdPage'
 import { InviteAcceptPage } from '@/routes/invites/InviteAcceptPage'
+import { PersonalLayout } from '@/routes/personal/PersonalLayout'
+import { ExpensesPage } from '@/routes/personal/ExpensesPage'
+import { BudgetsPage } from '@/routes/personal/BudgetsPage'
 
 export default function App() {
   return (
@@ -36,6 +39,12 @@ export default function App() {
           <Route path="/households" element={<HouseholdListPage />} />
           <Route path="/join" element={<JoinHouseholdPage />} />
           <Route path="/invites/:code" element={<InviteAcceptPage />} />
+
+          <Route path="/personal" element={<PersonalLayout />}>
+            <Route index element={<Navigate to="expenses" replace />} />
+            <Route path="expenses" element={<ExpensesPage />} />
+            <Route path="budget" element={<BudgetsPage />} />
+          </Route>
 
           <Route path="/h/:householdId" element={<HouseholdLayout />}>
             <Route index element={<SettlementDashboardPage />} />
