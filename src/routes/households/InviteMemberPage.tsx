@@ -327,7 +327,7 @@ function InviteDetailSheet({
       </Sheet>
 
       {fullscreenQr && invite.qrCodeUrl && (
-        <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-black/90 p-6">
+        <div className="fixed inset-0 z-60 flex flex-col items-center justify-center gap-6 bg-black/90 p-6">
           <button
             onClick={() => setFullscreenQr(false)}
             aria-label="Close"
