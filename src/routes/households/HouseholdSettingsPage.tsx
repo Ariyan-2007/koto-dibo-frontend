@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/Badge'
 import { InputField, TextareaField } from '@/components/ui/Field'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Link } from 'react-router-dom'
-import { Users, LogOut, ChevronRight } from '@/components/ui/icons'
+import { Users, LogOut, ChevronRight, UserPlus } from '@/components/ui/icons'
 
 export function HouseholdSettingsPage() {
   const { household } = useHouseholdContext()
@@ -123,6 +123,18 @@ export function HouseholdSettingsPage() {
           <ChevronRight width={18} height={18} className="text-muted" />
         </Card>
       </Link>
+
+      {canManage && (
+        <Link to={`/h/${household.id}/settings/invite`}>
+          <Card className="flex items-center justify-between p-4">
+            <span className="flex items-center gap-2 font-medium text-ink">
+              <UserPlus width={18} height={18} />
+              Invite Member
+            </span>
+            <ChevronRight width={18} height={18} className="text-muted" />
+          </Card>
+        </Link>
+      )}
 
       <Card className="p-5">
         <h2 className="mb-1 font-medium text-ink">Household Details</h2>

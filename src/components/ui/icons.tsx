@@ -171,3 +171,42 @@ export const ArrowDownRight = (props: IconProps) => (
     <path d="M7 7l10 10M17 8v9H8" />
   </svg>
 )
+
+export const Copy = (props: IconProps) => (
+  <svg {...base(props)}>
+    <rect x="9" y="9" width="12" height="12" rx="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </svg>
+)
+
+export const Share = (props: IconProps) => (
+  <svg {...base(props)}>
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9" />
+  </svg>
+)
+
+export const QrCode = (props: IconProps) => (
+  <svg {...base(props)}>
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17.5 17.5h.01M20 20h1v1h-1z" />
+  </svg>
+)
+
+export const UserPlus = (props: IconProps) => (
+  <svg {...base(props)}>
+    <circle cx="9" cy="8" r="3.2" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M19 8v6M22 11h-6" />
+  </svg>
+)
+
+export const Maximize = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" />
+  </svg>
+)

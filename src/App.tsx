@@ -19,6 +19,9 @@ import { CreateBillSplitPage } from '@/routes/billsplits/CreateBillSplitPage'
 import { BillSplitDetailPage } from '@/routes/billsplits/BillSplitDetailPage'
 import { HouseholdSettingsPage } from '@/routes/households/HouseholdSettingsPage'
 import { MembersPage } from '@/routes/households/MembersPage'
+import { InviteMemberPage } from '@/routes/households/InviteMemberPage'
+import { JoinHouseholdPage } from '@/routes/invites/JoinHouseholdPage'
+import { InviteAcceptPage } from '@/routes/invites/InviteAcceptPage'
 
 export default function App() {
   return (
@@ -30,6 +33,8 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/households" element={<HouseholdListPage />} />
+          <Route path="/join" element={<JoinHouseholdPage />} />
+          <Route path="/invites/:code" element={<InviteAcceptPage />} />
 
           <Route path="/h/:householdId" element={<HouseholdLayout />}>
             <Route index element={<SettlementDashboardPage />} />
@@ -50,6 +55,7 @@ export default function App() {
 
             <Route path="settings" element={<HouseholdSettingsPage />} />
             <Route path="settings/members" element={<MembersPage />} />
+            <Route path="settings/invite" element={<InviteMemberPage />} />
           </Route>
         </Route>
 

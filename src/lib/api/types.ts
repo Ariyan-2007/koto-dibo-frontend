@@ -39,6 +39,39 @@ export interface HouseholdMemberDto {
   joinedAt: string
 }
 
+export type HouseholdInviteStatus = 'Pending' | 'Accepted' | 'Revoked' | 'Expired'
+
+export interface HouseholdInviteDto {
+  id: string
+  householdId: string
+  invitedByUserId: string
+  code: string
+  role: HouseholdRole
+  email: string | null
+  status: HouseholdInviteStatus
+  inviteLink: string
+  qrCodeUrl: string | null
+  expiresAt: string
+  createdAt: string
+}
+
+export interface InvitePreviewDto {
+  code: string
+  householdId: string
+  householdName: string
+  role: HouseholdRole
+  invitedByName: string
+  status: HouseholdInviteStatus
+  expiresAt: string
+  callerIsAlreadyMember: boolean
+}
+
+export interface AcceptInviteResultDto {
+  householdId: string
+  householdName: string
+  member: HouseholdMemberDto
+}
+
 export interface BazarPurchaseDto {
   id: string
   householdId: string

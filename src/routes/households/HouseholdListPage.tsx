@@ -27,13 +27,16 @@ export function HouseholdListPage() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-ink">Your Households</h1>
         <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted hover:text-ink">
           <LogOut width={16} height={16} />
           Log Out
         </button>
       </div>
+      <Link to="/join" className="mb-6 text-sm font-medium text-primary">
+        Have an invite code? Join a household →
+      </Link>
 
       {isLoading ? (
         <SkeletonList rows={3} />

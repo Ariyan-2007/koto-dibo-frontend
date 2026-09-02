@@ -78,7 +78,7 @@ export function LoginPage() {
       </form>
       <p className="mt-5 text-center text-sm text-muted">
         New here?{' '}
-        <Link to="/register" className="font-medium text-primary">
+        <Link to="/register" state={location.state} className="font-medium text-primary">
           Create Account
         </Link>
       </p>

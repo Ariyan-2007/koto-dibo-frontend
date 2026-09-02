@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { register } from '@/lib/api/auth'
 import { useAuthStore } from '@/lib/auth/authStore'
 import { ApiError } from '@/lib/api/client'
@@ -9,6 +9,7 @@ import { InputField } from '@/components/ui/Field'
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const setSession = useAuthStore((s) => s.setSession)
 
   const [name, setName] = useState('')
@@ -26,7 +27,8 @@ export function RegisterPage() {
     try {
       const auth = await register({ name, email, password })
       setSession(auth)
-      navigate('/', { replace: true })
+      const from = (location.state as { from?: Location })?.from?.pathname ?? '/'
+      navigate(from, { replace: true })
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 429) {
@@ -86,7 +88,7 @@ export function RegisterPage() {
       </form>
       <p className="mt-5 text-center text-sm text-muted">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-primary">
+        <Link to="/login" state={location.state} className="font-medium text-primary">
           Sign In
         </Link>
       </p>

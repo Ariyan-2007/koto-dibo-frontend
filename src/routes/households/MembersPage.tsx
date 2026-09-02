@@ -13,7 +13,7 @@ import { SkeletonList } from '@/components/ui/Skeleton'
 import { Sheet } from '@/components/ui/Sheet'
 import { InputField, SelectField } from '@/components/ui/Field'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { ArrowLeft, Plus, ChevronDown } from '@/components/ui/icons'
+import { ArrowLeft, Plus, ChevronDown, UserPlus } from '@/components/ui/icons'
 import { Link } from 'react-router-dom'
 
 const ROLES: HouseholdRole[] = ['Manager', 'Member', 'Viewer']
@@ -131,9 +131,14 @@ export function MembersPage() {
       )}
 
       {canManage && (
-        <Button onClick={() => setAddOpen(true)} icon={<Plus width={18} height={18} />} className="self-start">
-          Add Member
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link to={`/h/${household.id}/settings/invite`}>
+            <Button icon={<UserPlus width={18} height={18} />}>Invite Member</Button>
+          </Link>
+          <Button variant="secondary" onClick={() => setAddOpen(true)} icon={<Plus width={18} height={18} />}>
+            Add Existing User by Email
+          </Button>
+        </div>
       )}
 
       <AddMemberSheet householdId={household.id} open={addOpen} onClose={() => setAddOpen(false)} />
@@ -173,7 +178,7 @@ function AddMemberSheet({ householdId, open, onClose }: { householdId: string; o
   })
 
   return (
-    <Sheet open={open} onClose={onClose} title="Add Member">
+    <Sheet open={open} onClose={onClose} title="Add Existing User by Email">
       <form
         onSubmit={(e) => {
           e.preventDefault()
