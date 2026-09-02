@@ -9,11 +9,13 @@ import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
 import { LedgerFormSheet, type LedgerFormValues } from '@/components/ledger/LedgerFormSheet'
+import { MemberFilterTabs } from '@/components/ledger/MemberFilterTabs'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { Wallet, Plus } from '@/components/ui/icons'
+import { formatMoney } from '@/lib/format'
 
 export function ContributionsListPage() {
   const { household, currentUserId } = useHouseholdContext()
@@ -21,6 +23,7 @@ export function ContributionsListPage() {
   const [formOpen, setFormOpen] = useState<'create' | ContributionDto | null>(null)
   const [cancelTarget, setCancelTarget] = useState<ContributionDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
 
   const { data: entries, isLoading } = useQuery({
     queryKey: ['contributions', household.id],
@@ -28,6 +31,29 @@ export function ContributionsListPage() {
   })
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
   const nameByUser = useMemo(() => new Map((members ?? []).map((m) => [m.userId, m.name])), [members])
+
+  const sortedEntries = useMemo(
+    () => [...(entries ?? [])].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
+    [entries],
+  )
+
+  const memberTabs = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const e of sortedEntries) counts.set(e.contributedByUserId, (counts.get(e.contributedByUserId) ?? 0) + 1)
+    return (members ?? [])
+      .map((m) => ({ userId: m.userId, label: m.userId === currentUserId ? 'You' : m.name, count: counts.get(m.userId) ?? 0 }))
+      .sort((a, b) => (a.userId === currentUserId ? -1 : b.userId === currentUserId ? 1 : a.label.localeCompare(b.label)))
+  }, [members, sortedEntries, currentUserId])
+
+  const visibleEntries = useMemo(
+    () => (selectedMember === 'all' ? sortedEntries : sortedEntries.filter((e) => e.contributedByUserId === selectedMember)),
+    [sortedEntries, selectedMember],
+  )
+  const visibleTotal = useMemo(
+    () => visibleEntries.filter((e) => e.status === 'Active').reduce((sum, e) => sum + e.amount, 0),
+    [visibleEntries],
+  )
+  const selectedLabel = selectedMember === 'all' ? null : (memberTabs.find((m) => m.userId === selectedMember)?.label ?? null)
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['contributions', household.id] })
 
@@ -84,21 +110,36 @@ export function ContributionsListPage() {
     <div className="flex flex-col gap-3">
       {isLoading ? (
         <SkeletonList />
-      ) : entries && entries.length > 0 ? (
-        entries.map((entry) => (
-          <LedgerEntryCard
-            key={entry.id}
-            entry={{ ...entry, note: entry.notes }}
-            byName={nameByUser.get(entry.contributedByUserId) ?? '—'}
-            householdId={household.id}
-            canEdit={entry.sourceType !== 'AutoFromBazar' && canEditEntry(household.callerRole, entry.contributedByUserId, currentUserId)}
-            onEdit={() => {
-              setFieldErrors({})
-              setFormOpen(entry)
-            }}
-            onCancel={() => setCancelTarget(entry)}
-          />
-        ))
+      ) : sortedEntries.length > 0 ? (
+        <>
+          <MemberFilterTabs options={memberTabs} selected={selectedMember} onSelect={setSelectedMember} totalCount={sortedEntries.length} />
+
+          {visibleEntries.length > 0 && (
+            <p className="px-1 text-xs text-muted">
+              {visibleEntries.length} {visibleEntries.length === 1 ? 'entry' : 'entries'}
+              {selectedLabel && ` from ${selectedLabel}`} · {formatMoney(visibleTotal, 'BDT')} total
+            </p>
+          )}
+
+          {visibleEntries.length > 0 ? (
+            visibleEntries.map((entry) => (
+              <LedgerEntryCard
+                key={entry.id}
+                entry={{ ...entry, note: entry.notes }}
+                byName={nameByUser.get(entry.contributedByUserId) ?? '—'}
+                householdId={household.id}
+                canEdit={entry.sourceType !== 'AutoFromBazar' && canEditEntry(household.callerRole, entry.contributedByUserId, currentUserId)}
+                onEdit={() => {
+                  setFieldErrors({})
+                  setFormOpen(entry)
+                }}
+                onCancel={() => setCancelTarget(entry)}
+              />
+            ))
+          ) : (
+            <EmptyState icon={<Wallet width={28} height={28} />} title={`No Contributions From ${selectedLabel}`} />
+          )}
+        </>
       ) : (
         <EmptyState icon={<Wallet width={28} height={28} />} title="No Contributions Yet" />
       )}

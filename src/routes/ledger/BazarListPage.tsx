@@ -10,12 +10,14 @@ import { toast, errorMessage } from '@/lib/toast'
 import { currentMonthKey } from '@/lib/ledger/period'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
 import { LedgerFormSheet, type LedgerFormValues } from '@/components/ledger/LedgerFormSheet'
+import { MemberFilterTabs } from '@/components/ledger/MemberFilterTabs'
 import { MonthEndReconciliationCard } from '@/components/ledger/MonthEndReconciliationCard'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
 import { Cart, Plus, Wallet } from '@/components/ui/icons'
+import { formatMoney } from '@/lib/format'
 
 export function BazarListPage() {
   const { household, currentUserId } = useHouseholdContext()
@@ -24,6 +26,7 @@ export function BazarListPage() {
   const [cancelTarget, setCancelTarget] = useState<BazarPurchaseDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | undefined>()
+  const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
 
   const { data: entries, isLoading } = useQuery({
     queryKey: ['bazar', household.id],
@@ -31,6 +34,29 @@ export function BazarListPage() {
   })
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
   const nameByUser = useMemo(() => new Map((members ?? []).map((m) => [m.userId, m.name])), [members])
+
+  const sortedEntries = useMemo(
+    () => [...(entries ?? [])].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
+    [entries],
+  )
+
+  const memberTabs = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const e of sortedEntries) counts.set(e.purchasedByUserId, (counts.get(e.purchasedByUserId) ?? 0) + 1)
+    return (members ?? [])
+      .map((m) => ({ userId: m.userId, label: m.userId === currentUserId ? 'You' : m.name, count: counts.get(m.userId) ?? 0 }))
+      .sort((a, b) => (a.userId === currentUserId ? -1 : b.userId === currentUserId ? 1 : a.label.localeCompare(b.label)))
+  }, [members, sortedEntries, currentUserId])
+
+  const visibleEntries = useMemo(
+    () => (selectedMember === 'all' ? sortedEntries : sortedEntries.filter((e) => e.purchasedByUserId === selectedMember)),
+    [sortedEntries, selectedMember],
+  )
+  const visibleTotal = useMemo(
+    () => visibleEntries.filter((e) => e.status === 'Active').reduce((sum, e) => sum + e.amount, 0),
+    [visibleEntries],
+  )
+  const selectedLabel = selectedMember === 'all' ? null : (memberTabs.find((m) => m.userId === selectedMember)?.label ?? null)
 
   const hasLeftoverThisMonth = useMemo(
     () => (entries ?? []).some((e) => e.status === 'Active' && e.amount < 0 && e.date.slice(0, 7) === currentMonthKey()),
@@ -113,22 +139,37 @@ export function BazarListPage() {
 
       {isLoading ? (
         <SkeletonList />
-      ) : entries && entries.length > 0 ? (
-        entries.map((entry) => (
-          <LedgerEntryCard
-            key={entry.id}
-            entry={entry}
-            byName={nameByUser.get(entry.purchasedByUserId) ?? '—'}
-            householdId={household.id}
-            canEdit={canEditEntry(household.callerRole, entry.purchasedByUserId, currentUserId)}
-            onEdit={() => {
-              setFieldErrors({})
-              setFormError(undefined)
-              setFormOpen(entry)
-            }}
-            onCancel={() => setCancelTarget(entry)}
-          />
-        ))
+      ) : sortedEntries.length > 0 ? (
+        <>
+          <MemberFilterTabs options={memberTabs} selected={selectedMember} onSelect={setSelectedMember} totalCount={sortedEntries.length} />
+
+          {visibleEntries.length > 0 && (
+            <p className="px-1 text-xs text-muted">
+              {visibleEntries.length} {visibleEntries.length === 1 ? 'entry' : 'entries'}
+              {selectedLabel && ` from ${selectedLabel}`} · {formatMoney(visibleTotal, 'BDT')} total
+            </p>
+          )}
+
+          {visibleEntries.length > 0 ? (
+            visibleEntries.map((entry) => (
+              <LedgerEntryCard
+                key={entry.id}
+                entry={entry}
+                byName={nameByUser.get(entry.purchasedByUserId) ?? '—'}
+                householdId={household.id}
+                canEdit={canEditEntry(household.callerRole, entry.purchasedByUserId, currentUserId)}
+                onEdit={() => {
+                  setFieldErrors({})
+                  setFormError(undefined)
+                  setFormOpen(entry)
+                }}
+                onCancel={() => setCancelTarget(entry)}
+              />
+            ))
+          ) : (
+            <EmptyState icon={<Cart width={28} height={28} />} title={`No Bazar Entries From ${selectedLabel}`} />
+          )}
+        </>
       ) : (
         <EmptyState icon={<Cart width={28} height={28} />} title="No Bazar Entries Yet" />
       )}
