@@ -6,8 +6,9 @@ import { cn } from '@/lib/cn'
 
 const TABS = [
   { to: '/households', label: 'Households' },
+  { to: '/dashboard', label: 'Dashboard' },
   { to: '/expenses', label: 'Expenses' },
-  { to: '/budget', label: 'Budget' },
+  { to: '/budgets', label: 'Budgets' },
 ]
 
 export function DashboardLayout() {

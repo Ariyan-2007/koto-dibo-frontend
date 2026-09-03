@@ -220,18 +220,266 @@ export interface HouseholdSettlementDto {
   calculationVersion: string
 }
 
+// ---- Phase 7: Personal Expenses & Budget (not household-scoped) ----
+
+export type ExpensePaymentMethod = 'Cash' | 'BankAccount' | 'CreditCard' | 'MobileWallet' | 'Other'
+export type ExpenseSortField = 'Date' | 'Amount' | 'CreatedAt' | 'Merchant' | 'Category'
+export type RecurrenceFrequency = 'Daily' | 'Weekly' | 'Biweekly' | 'Monthly' | 'Quarterly' | 'Yearly'
+export type BudgetPeriodType = 'Weekly' | 'Monthly' | 'Yearly' | 'Custom'
+export type BudgetStatus = 'Draft' | 'Active' | 'Completed' | 'Archived'
+export type BudgetCategoryStatus = 'NoBudget' | 'OnTrack' | 'Warning' | 'Overspent'
+export type BudgetHealthStatus = 'NoBudget' | 'Healthy' | 'Warning' | 'Overspending' | 'Critical'
+export type BudgetAdjustmentType = 'Initial' | 'Increase' | 'Decrease' | 'Rollover' | 'TransferIn' | 'TransferOut'
+export type DashboardPeriodPreset = 'Today' | 'ThisWeek' | 'ThisMonth' | 'LastMonth' | 'ThisYear' | 'Custom'
+export type DashboardComparisonPeriod = 'None' | 'PreviousPeriod' | 'SamePeriodLastYear'
+export type DashboardTrend = 'Increased' | 'Decreased' | 'Stable'
+
+export interface PagedResult<T> {
+  items: T[]
+  page: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+}
+
+export interface ExpenseCategoryDto {
+  id: string
+  parentCategoryId: string | null
+  name: string
+  icon: string | null
+  isSystemDefault: boolean
+  isActive: boolean
+}
+
 export interface ExpenseDto {
   id: string
   amount: number
-  category: string
-  description: string
+  currency: string
+  categoryId: string
+  categoryName: string
+  merchant: string | null
+  description: string | null
+  notes: string | null
   date: string
+  paymentMethod: ExpensePaymentMethod
+  tags: string[]
+  receiptUrl: string | null
+  recurringExpenseId: string | null
+  isRecurringGenerated: boolean
+  status: FinancialEntryStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface RecurringExpenseDto {
+  id: string
+  amount: number
+  currency: string
+  categoryId: string
+  categoryName: string
+  merchant: string | null
+  description: string | null
+  notes: string | null
+  paymentMethod: ExpensePaymentMethod
+  tags: string[]
+  frequency: RecurrenceFrequency
+  startDate: string
+  endDate: string | null
+  nextOccurrenceDate: string
+  lastGeneratedDate: string | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BudgetCategoryDto {
+  id: string
+  categoryId: string
+  categoryName: string
+  plannedAmount: number
+  rolloverEnabled: boolean
+  rolloverAmount: number
+  totalAvailable: number
+  spent: number
+  remaining: number
+  variance: number
+  usagePercentage: number | null
+  status: BudgetCategoryStatus
+  notes: string | null
 }
 
 export interface BudgetDto {
   id: string
-  period: string
+  name: string
+  description: string | null
+  currency: string
+  periodType: BudgetPeriodType
+  startDate: string
+  endDate: string
+  status: BudgetStatus
+  notes: string | null
+  totalPlanned: number
+  totalRollover: number
+  totalAvailable: number
+  totalSpent: number
+  totalRemaining: number
+  totalOverspent: number
+  utilizationPercentage: number | null
+  health: BudgetHealthStatus
+  categories: BudgetCategoryDto[]
+  createdAt: string
+  updatedAt: string
+}
+
+/** Returned by `GET /api/budgets` — omits the per-category breakdown `BudgetDto` carries. */
+export interface BudgetSummaryDto {
+  id: string
+  name: string
+  currency: string
+  periodType: BudgetPeriodType
+  startDate: string
+  endDate: string
+  status: BudgetStatus
+  totalPlanned: number
+  totalAvailable: number
+  totalSpent: number
+  totalRemaining: number
+  utilizationPercentage: number | null
+  health: BudgetHealthStatus
+}
+
+export interface BudgetAdjustmentDto {
+  id: string
+  budgetCategoryAllocationId: string
+  type: BudgetAdjustmentType
   amount: number
+  balanceAfter: number
+  relatedCategoryAllocationId: string | null
+  reason: string | null
+  createdAt: string
+}
+
+export interface DashboardPeriodDto {
+  from: string
+  to: string
+  preset: string
+}
+
+export interface DashboardSummaryDto {
+  totalBudget: number
+  totalAllocated: number
+  totalSpent: number
+  totalRemaining: number
+  totalOverspent: number
+  budgetUtilizationPercentage: number | null
+  expenseCount: number
+  averageExpense: number
+}
+
+export interface DashboardBudgetDto {
+  hasBudget: boolean
+  id: string | null
+  name: string | null
+  status: BudgetStatus | null
+  health: BudgetHealthStatus
+}
+
+export interface DashboardExpensesDto {
+  count: number
+  totalAmount: number
+  averageAmount: number
+  recentExpenses: ExpenseDto[]
+}
+
+export interface BudgetVsActualPointDto {
+  label: string
+  budget: number
+  actual: number
+}
+
+export interface CategoryBreakdownDto {
+  categoryId: string
+  categoryName: string
+  budget: number
+  spent: number
+  remaining: number
+  variance: number
+  utilizationPercentage: number | null
+  status: BudgetCategoryStatus
+  percentageOfTotalSpending: number | null
+}
+
+export interface SpendingTrendPointDto {
+  date: string
+  amount: number
+}
+
+export interface TopCategoryDto {
+  categoryId: string
+  categoryName: string
+  amount: number
+  percentageOfTotal: number
+}
+
+export interface TopMerchantDto {
+  merchant: string
+  amount: number
+  transactionCount: number
+  percentageOfTotal: number
+}
+
+export interface UpcomingExpenseDto {
+  recurringExpenseId: string
+  description: string | null
+  merchant: string | null
+  categoryName: string
+  amount: number
+  nextOccurrenceDate: string
+  daysUntilDue: number
+}
+
+export interface DashboardComparisonDto {
+  previousFrom: string
+  previousTo: string
+  currentSpending: number
+  previousSpending: number
+  spendingChange: number
+  spendingChangePercentage: number | null
+  currentBudget: number
+  previousBudget: number
+  budgetChange: number
+  budgetChangePercentage: number | null
+  trend: DashboardTrend
+}
+
+export interface DashboardInsightsDto {
+  highestSpendingCategory: string | null
+  mostFrequentCategory: string | null
+  highestExpenseAmount: number | null
+  highestExpenseDescription: string | null
+  averageExpense: number
+  overspendingCategoriesCount: number
+  categoriesApproachingLimit: string[]
+  categoriesSignificantlyUnderBudget: string[]
+  recurringExpensesTotal: number
+  fixedExpensesTotal: number
+  variableExpensesTotal: number
+}
+
+export interface DashboardResponse {
+  period: DashboardPeriodDto
+  summary: DashboardSummaryDto
+  budget: DashboardBudgetDto
+  expenses: DashboardExpensesDto
+  budgetVsActual: BudgetVsActualPointDto[]
+  categoryBreakdown: CategoryBreakdownDto[]
+  spendingTrend: SpendingTrendPointDto[]
+  topCategories: TopCategoryDto[]
+  topMerchants: TopMerchantDto[]
+  overspending: CategoryBreakdownDto[]
+  upcomingExpenses: UpcomingExpenseDto[]
+  comparison: DashboardComparisonDto | null
+  insights: DashboardInsightsDto
 }
 
 export interface ApiErrorEnvelope {

@@ -41,3 +41,9 @@ export function getMonthRange(year: number, month: number): { from: string; to: 
 export function dayOfMonthIso(year: number, month: number, day: number): string {
   return toIso(year, month, day)
 }
+
+/** `null` means "never budgeted" (§Phase 7) — render as an em dash, not "0%". */
+export function formatPercent(value: number | null | undefined, digits = 0): string {
+  if (value === null || value === undefined) return '—'
+  return `${value.toFixed(digits)}%`
+}

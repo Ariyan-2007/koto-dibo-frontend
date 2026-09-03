@@ -23,8 +23,11 @@ import { JoinHouseholdPage } from '@/routes/invites/JoinHouseholdPage'
 import { InviteAcceptPage } from '@/routes/invites/InviteAcceptPage'
 import { DashboardLayout } from '@/routes/dashboard/DashboardLayout'
 import { HouseholdsTab } from '@/routes/dashboard/HouseholdsTab'
+import { PersonalDashboardPage } from '@/routes/personal/PersonalDashboardPage'
 import { ExpensesPage } from '@/routes/personal/ExpensesPage'
+import { RecurringExpensesPage } from '@/routes/personal/RecurringExpensesPage'
 import { BudgetsPage } from '@/routes/personal/BudgetsPage'
+import { BudgetDetailPage } from '@/routes/personal/BudgetDetailPage'
 
 export default function App() {
   return (
@@ -40,8 +43,11 @@ export default function App() {
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<Navigate to="/households" replace />} />
             <Route path="households" element={<HouseholdsTab />} />
+            <Route path="dashboard" element={<PersonalDashboardPage />} />
             <Route path="expenses" element={<ExpensesPage />} />
-            <Route path="budget" element={<BudgetsPage />} />
+            <Route path="expenses/recurring" element={<RecurringExpensesPage />} />
+            <Route path="budgets" element={<BudgetsPage />} />
+            <Route path="budgets/:budgetId" element={<BudgetDetailPage />} />
           </Route>
 
           <Route path="/h/:householdId" element={<HouseholdLayout />}>

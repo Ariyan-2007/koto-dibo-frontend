@@ -1,13 +1,14 @@
 import type { HTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
-type Tone = 'primary' | 'muted' | 'danger' | 'success'
+type Tone = 'primary' | 'muted' | 'danger' | 'success' | 'warning'
 
 const toneClasses: Record<Tone, string> = {
   primary: 'bg-primary-soft text-primary',
   muted: 'bg-surface-muted text-muted',
   danger: 'bg-danger-soft text-danger',
   success: 'bg-primary-soft text-primary',
+  warning: 'bg-warning-soft text-warning',
 }
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {

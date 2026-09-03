@@ -224,3 +224,57 @@ export const RefreshCw = (props: IconProps) => (
     <path d="M21 12a9 9 0 0 1-15.3 6.4L3 16M3 21v-5h5" />
   </svg>
 )
+
+export const Filter = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M4 5h16l-6.5 8v5l-3 2v-7Z" />
+  </svg>
+)
+
+export const Search = (props: IconProps) => (
+  <svg {...base(props)}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m21 21-4.3-4.3" />
+  </svg>
+)
+
+export const Tag = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M12.6 2H4a2 2 0 0 0-2 2v8.6a2 2 0 0 0 .6 1.4l9.4 9.4a2 2 0 0 0 2.8 0l7.2-7.2a2 2 0 0 0 0-2.8L12.6 2Z" />
+    <circle cx="7.5" cy="7.5" r="1.2" />
+  </svg>
+)
+
+export const Repeat = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="m17 2 4 4-4 4" />
+    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+    <path d="m7 22-4-4 4-4" />
+    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+  </svg>
+)
+
+export const ArrowRightLeft = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="m17 3 4 4-4 4" />
+    <path d="M3 7h18" />
+    <path d="m7 21-4-4 4-4" />
+    <path d="M21 17H3" />
+  </svg>
+)
+
+export const History = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M12 7v5l3 3" />
+  </svg>
+)
+
+export const Layers = (props: IconProps) => (
+  <svg {...base(props)}>
+    <path d="m12 2 9 5-9 5-9-5 9-5Z" />
+    <path d="m3 12 9 5 9-5" />
+    <path d="m3 17 9 5 9-5" />
+  </svg>
+)
