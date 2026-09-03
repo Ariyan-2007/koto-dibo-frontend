@@ -16,8 +16,8 @@ export function CategoryBreakdownList({ items, currency }: { items: CategoryBrea
               <span className="truncate font-medium text-ink">{c.categoryName}</span>
               <Badge tone={BUDGET_CATEGORY_STATUS_TONE[c.status]}>{BUDGET_CATEGORY_STATUS_LABEL[c.status]}</Badge>
             </div>
-            <div className="mt-1.5 h-1.5 rounded-pill bg-surface-muted">
-              <div className={cn('h-1.5 rounded-pill', barTone)} style={{ width: `${pct}%` }} />
+            <div className="mt-1.5 h-1.5 rounded-[2px] bg-surface-muted">
+              <div className={cn('h-1.5 rounded-[2px]', barTone)} style={{ width: `${pct}%` }} />
             </div>
             <div className="mt-1 flex items-center justify-between text-xs text-muted">
               <span>

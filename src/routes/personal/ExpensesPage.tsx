@@ -112,22 +112,25 @@ export function ExpensesPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-ink">Expenses</h1>
+        <div>
+          <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Personal finance</p>
+          <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Expenses</h1>
+        </div>
         <div className="flex items-center gap-1">
-          <Link to="/expenses/recurring" aria-label="Recurring expenses" className="rounded-pill p-2.5 text-muted hover:bg-surface-muted hover:text-ink">
+          <Link to="/expenses/recurring" aria-label="Recurring expenses" className="rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink">
             <Repeat width={18} height={18} />
           </Link>
           <button
             onClick={() => setCategoriesOpen(true)}
             aria-label="Manage categories"
-            className="rounded-pill p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
+            className="rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
           >
             <Tag width={18} height={18} />
           </button>
           <button
             onClick={() => setFiltersOpen(true)}
             aria-label="Filter expenses"
-            className="relative rounded-pill p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
+            className="relative rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
           >
             <Filter width={18} height={18} />
             {filterCount > 0 && (
@@ -161,7 +164,7 @@ export function ExpensesPage() {
                   {expense.tags.length > 0 && (
                     <div className="mt-1 flex flex-wrap gap-1">
                       {expense.tags.map((t) => (
-                        <span key={t} className="rounded-pill bg-surface-muted px-1.5 py-0.5 text-[10px] text-muted">
+                        <span key={t} className="rounded-[2px] bg-surface-muted px-1.5 py-0.5 text-[10px] text-muted">
                           #{t}
                         </span>
                       ))}

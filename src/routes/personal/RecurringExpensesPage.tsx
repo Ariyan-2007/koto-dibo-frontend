@@ -121,9 +121,9 @@ export function RecurringExpensesPage() {
         <Link to="/expenses" className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="flex-1 text-xl font-semibold text-ink">Recurring Expenses</h1>
+        <h1 className="flex-1 font-heading text-[22px] font-semibold text-ink">Recurring expenses</h1>
         <Button size="sm" variant="secondary" isLoading={generateMutation.isPending} onClick={() => generateMutation.mutate()} icon={<RefreshCw width={15} height={15} />}>
-          Sync Due
+          Sync due
         </Button>
       </div>
 

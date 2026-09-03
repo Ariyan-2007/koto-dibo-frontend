@@ -30,7 +30,7 @@ export function JoinHouseholdPage() {
           autoFocus
           required
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" framed className="w-full">
           Continue
         </Button>
       </form>

@@ -38,8 +38,8 @@ function TabButton({ label, count, active, onClick }: { label: string; count: nu
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        'shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium transition-colors',
-        active ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface text-ink hover:bg-surface-muted',
+        'shrink-0 rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors',
+        active ? 'border-primary bg-primary-soft text-primary-active' : 'border-border bg-surface text-ink hover:bg-surface-muted',
       )}
     >
       {label} <span className={cn('ml-0.5', active ? 'text-primary/70' : 'text-muted')}>{count}</span>

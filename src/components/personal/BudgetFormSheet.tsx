@@ -171,7 +171,7 @@ export function BudgetFormSheet({
           <button
             type="button"
             onClick={() => setRows([...rows, emptyRow()])}
-            className="flex items-center gap-1 rounded-pill border border-dashed border-border px-3 py-1.5 text-xs text-muted hover:bg-surface-muted"
+            className="flex items-center gap-1 rounded-sm border border-dashed border-border px-3 py-1.5 text-xs text-muted hover:bg-surface-muted"
           >
             <Plus width={14} height={14} /> Add a category
           </button>

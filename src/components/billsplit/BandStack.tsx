@@ -20,7 +20,7 @@ export function BandStack({ bands, currency }: { bands: BillSplitBandDto[]; curr
                 </span>
                 <span className="font-medium text-ink">{formatMoney(band.cost, currency)}</span>
               </div>
-              <div className="flex h-3 overflow-hidden rounded-pill bg-surface-muted">
+              <div className="flex h-2.5 overflow-hidden rounded-[2px] bg-surface-muted">
                 <div className="h-full bg-primary" style={{ width: `${attributedPct}%` }} title="attributed to sub-meters" />
                 <div className="h-full bg-border" style={{ width: `${sharedPct}%` }} title="shared" />
               </div>
@@ -33,10 +33,10 @@ export function BandStack({ bands, currency }: { bands: BillSplitBandDto[]; curr
       </div>
       <div className="mt-4 flex items-center gap-4 text-xs text-muted">
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-pill bg-primary" /> Attributed to sub-meters
+          <span className="h-2.5 w-2.5 rounded-[2px] bg-primary" /> Attributed to sub-meters
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-pill bg-border" /> Shared
+          <span className="h-2.5 w-2.5 rounded-[2px] bg-border" /> Shared
         </span>
       </div>
     </Card>

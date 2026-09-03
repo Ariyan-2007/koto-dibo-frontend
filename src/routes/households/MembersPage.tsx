@@ -66,7 +66,7 @@ export function MembersPage() {
         <Link to={`/h/${household.id}/settings`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="text-xl font-semibold text-ink">Members</h1>
+        <h1 className="font-heading text-[22px] font-semibold text-ink">Members</h1>
       </div>
 
       <Card className="p-4">

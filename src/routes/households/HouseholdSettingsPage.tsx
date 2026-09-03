@@ -107,8 +107,9 @@ export function HouseholdSettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Household Settings</h1>
-        <div className="mt-1 flex items-center gap-2">
+        <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">{household.name}</p>
+        <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Household settings</h1>
+        <div className="mt-2 flex items-center gap-2">
           <Badge tone="primary">{household.callerRole}</Badge>
           {household.status === 'Archived' && <Badge tone="danger">Archived</Badge>}
         </div>
@@ -147,7 +148,7 @@ export function HouseholdSettingsPage() {
       )}
 
       <Card className="p-5">
-        <h2 className="mb-1 font-medium text-ink">Household Details</h2>
+        <h2 className="mb-1 font-heading text-[15px] font-semibold text-ink">Household details</h2>
         {!canManage && (
           <p className="mb-3 text-xs text-muted">Only the Owner or a Manager can change these settings.</p>
         )}
@@ -177,7 +178,7 @@ export function HouseholdSettingsPage() {
 
       {canManage && (
         <Card className="p-5">
-          <h2 className="mb-1 font-medium text-ink">Archive</h2>
+          <h2 className="mb-1 font-heading text-[15px] font-semibold text-ink">Archive</h2>
           <p className="mb-3 text-sm text-muted">
             {household.status === 'Archived'
               ? 'Restore to resume membership changes and new entries.'
@@ -193,7 +194,7 @@ export function HouseholdSettingsPage() {
       )}
 
       <Card className="p-5">
-        <h2 className="mb-3 font-medium text-ink">Account</h2>
+        <h2 className="mb-3 font-heading text-[15px] font-semibold text-ink">Account</h2>
         <div className="flex flex-col gap-2">
           <Button variant="secondary" onClick={handleLogout} icon={<LogOut width={16} height={16} />} className="justify-start">
             Log Out

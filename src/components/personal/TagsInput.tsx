@@ -31,7 +31,7 @@ export function TagsInput({ value, onChange, error }: { value: string[]; onChang
       <label className="text-sm font-medium text-ink">Tags</label>
       <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1.5 focus-within:border-primary focus-within:shadow-focus">
         {value.map((tag) => (
-          <span key={tag} className="inline-flex items-center gap-1 rounded-pill bg-surface-muted px-2 py-1 text-xs text-ink">
+          <span key={tag} className="inline-flex items-center gap-1 rounded-[2px] bg-surface-muted px-2 py-1 text-xs text-ink">
             {tag}
             <button type="button" onClick={() => onChange(value.filter((t) => t !== tag))} aria-label={`Remove tag ${tag}`}>
               <X width={12} height={12} className="text-muted" />

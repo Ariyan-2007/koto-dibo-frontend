@@ -59,16 +59,20 @@ export function BudgetsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-ink">Budgets</h1>
+      <div>
+        <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Personal finance</p>
+        <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Budgets</h1>
+      </div>
 
-      <div className="flex gap-1 overflow-x-auto rounded-md bg-surface-muted p-1">
-        {STATUS_TABS.map((tab) => (
+      <div className="inline-flex overflow-x-auto rounded-sm border border-border">
+        {STATUS_TABS.map((tab, i) => (
           <button
             key={tab.value}
             onClick={() => setStatusFilter(tab.value)}
             className={cn(
-              'shrink-0 rounded-md px-3 py-1.5 text-sm font-medium',
-              statusFilter === tab.value ? 'bg-surface text-primary shadow-sm' : 'text-muted',
+              'shrink-0 px-3 py-1.5 font-heading text-[13px] font-semibold',
+              i > 0 && 'border-l border-border',
+              statusFilter === tab.value ? 'bg-primary text-white' : 'text-ink hover:bg-surface-muted',
             )}
           >
             {tab.label}
@@ -85,7 +89,7 @@ export function BudgetsPage() {
               <Card className="p-4 hover:border-primary">
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-ink">{budget.name}</p>
+                    <p className="truncate font-heading text-[15px] font-semibold text-ink">{budget.name}</p>
                     <p className="text-xs text-muted">
                       {PERIOD_TYPE_LABEL[budget.periodType]} · {formatDate(budget.startDate)} – {formatDate(budget.endDate)}
                     </p>
@@ -95,9 +99,9 @@ export function BudgetsPage() {
                     <ChevronRight width={16} height={16} className="text-muted" />
                   </div>
                 </div>
-                <div className="mt-3 h-2 rounded-pill bg-surface-muted">
+                <div className="mt-3 h-2.5 rounded-[2px] bg-surface-muted">
                   <div
-                    className={cn('h-2 rounded-pill', budget.health === 'Overspending' || budget.health === 'Critical' ? 'bg-danger' : 'bg-primary')}
+                    className={cn('h-2.5 rounded-[2px]', budget.health === 'Overspending' || budget.health === 'Critical' ? 'bg-danger' : 'bg-primary')}
                     style={{ width: `${Math.min(100, budget.utilizationPercentage ?? 0)}%` }}
                   />
                 </div>
@@ -124,9 +128,10 @@ export function BudgetsPage() {
           setFieldErrors({})
           setFormOpen(true)
         }}
+        framed
         icon={<Plus width={18} height={18} />}
       >
-        New Budget
+        New budget
       </Button>
 
       <BudgetFormSheet

@@ -67,7 +67,7 @@ export function BillSplitDetailPage() {
         <Link to={`/h/${household.id}/bill-splits`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className={cn('flex-1 truncate text-xl font-semibold text-ink', billSplit.status === 'Cancelled' && 'line-through')}>
+        <h1 className={cn('flex-1 truncate font-heading text-[22px] font-semibold text-ink', billSplit.status === 'Cancelled' && 'line-through')}>
           {billSplit.title}
         </h1>
         {canEdit && (
@@ -75,14 +75,14 @@ export function BillSplitDetailPage() {
             <button
               onClick={() => setEditOpen(true)}
               aria-label="Edit bill split"
-              className="rounded-pill p-3 text-muted hover:bg-surface-muted hover:text-ink"
+              className="rounded-sm p-3 text-muted hover:bg-surface-muted hover:text-ink"
             >
               <Pencil width={18} height={18} />
             </button>
             <button
               onClick={() => setCancelOpen(true)}
               aria-label="Cancel bill split"
-              className="rounded-pill p-3 text-muted hover:bg-danger-soft hover:text-danger"
+              className="rounded-sm p-3 text-muted hover:bg-danger-soft hover:text-danger"
             >
               <Trash width={18} height={18} />
             </button>

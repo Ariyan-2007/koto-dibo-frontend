@@ -39,24 +39,24 @@ export function MealSettlementPage() {
         <Link to={`/h/${household.id}/meals`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="text-xl font-semibold text-ink">Meal Settlement</h1>
+        <h1 className="font-heading text-[22px] font-semibold text-ink">Meal settlement</h1>
       </div>
 
       <div className="flex items-center justify-between">
         <button
           onClick={() => setCursor((c) => (c.month === 0 ? { year: c.year - 1, month: 11 } : { year: c.year, month: c.month - 1 }))}
-          className="rounded-pill p-2 text-muted hover:bg-surface-muted"
+          className="rounded-sm border border-border p-1.5 text-muted hover:bg-surface-muted"
           aria-label="Previous month"
         >
-          <ChevronLeft />
+          <ChevronLeft width={16} height={16} />
         </button>
-        <p className="font-medium text-ink">{label}</p>
+        <p className="font-heading font-semibold text-ink">{label}</p>
         <button
           onClick={() => setCursor((c) => (c.month === 11 ? { year: c.year + 1, month: 0 } : { year: c.year, month: c.month + 1 }))}
-          className="rounded-pill p-2 text-muted hover:bg-surface-muted"
+          className="rounded-sm border border-border p-1.5 text-muted hover:bg-surface-muted"
           aria-label="Next month"
         >
-          <ChevronRight />
+          <ChevronRight width={16} height={16} />
         </button>
       </div>
 

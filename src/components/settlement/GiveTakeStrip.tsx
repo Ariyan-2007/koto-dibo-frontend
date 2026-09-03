@@ -15,8 +15,8 @@ export function GiveTakeStrip({ items, currency }: { items: GiveTakeItem[]; curr
 
   return (
     <Card className="p-4">
-      <h3 className="mb-3 text-sm font-medium text-ink">Where Everyone Stands</h3>
-      <div className="flex flex-col gap-2">
+      <h3 className="mb-3 font-heading text-[15px] font-semibold text-ink">Who owes whom</h3>
+      <div className="flex flex-col gap-0 divide-y divide-border">
         {owed.map((i) => (
           <Row key={i.name} name={i.name} label="is owed" value={i.giveTake} currency={currency} tone="primary" />
         ))}
@@ -44,13 +44,13 @@ function Row({
   currency: string
   tone: 'primary' | 'danger' | 'muted'
 }) {
-  const toneClass = tone === 'primary' ? 'text-primary' : tone === 'danger' ? 'text-danger' : 'text-muted'
+  const toneClass = tone === 'primary' ? 'text-primary-active' : tone === 'danger' ? 'text-danger' : 'text-muted'
   return (
-    <div className="flex items-center justify-between text-sm">
+    <div className="flex items-center justify-between py-2 text-sm">
       <span className="text-ink">
-        <span className="font-medium">{name}</span> <span className="text-muted">{label}</span>
+        <span className="font-semibold">{name}</span> <span className="text-muted">{label}</span>
       </span>
-      <span className={`font-medium ${toneClass}`}>{value === 0 ? '—' : formatMoney(value, currency)}</span>
+      <span className={`font-num font-heading font-semibold ${toneClass}`}>{value === 0 ? '—' : formatMoney(value, currency)}</span>
     </div>
   )
 }

@@ -26,15 +26,16 @@ export function LedgerHistoryPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Running Ledger</h1>
-        <p className="text-sm text-muted">
-          Balances never reset to zero — each month's own result adds onto everything before it (§0.6).
+        <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Household · Ledger</p>
+        <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Running ledger</h1>
+        <p className="mt-1 text-sm text-muted">
+          Balances never reset to zero — each month's own result adds onto everything before it.
         </p>
       </div>
 
-      <Card className="p-4">
-        <p className="text-xs text-muted">Shopping-fund balance (cumulative)</p>
-        <p className="mt-1 text-lg font-semibold text-ink">
+      <Card plain className="corner-frame p-4 text-primary">
+        <p className="text-[10px] font-semibold tracking-widest text-muted uppercase">Shopping-fund balance · cumulative</p>
+        <p className="font-num mt-1 font-heading text-2xl font-semibold text-ink">
           {latestKey ? formatMoney(ledger.fundBalance(latestKey), currency) : <Skeleton className="h-6 w-24" />}
         </p>
         {latestKey && (

@@ -22,8 +22,11 @@ export function BillSplitListPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-ink">Bill Splits</h1>
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Household · Splits</p>
+          <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Bill splits</h1>
+        </div>
         {canAddEntry(household.callerRole) && (
           <Link to={`/h/${household.id}/bill-splits/new`}>
             <Button size="sm" icon={<Plus width={16} height={16} />}>

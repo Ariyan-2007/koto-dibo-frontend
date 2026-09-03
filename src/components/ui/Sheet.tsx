@@ -17,11 +17,11 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="flex max-h-[90vh] w-full flex-col rounded-t-lg bg-surface shadow-sheet md:max-w-lg md:rounded-lg md:shadow-card"
+        className="flex max-h-[90vh] w-full flex-col rounded-t-lg border border-border bg-surface shadow-sheet md:max-w-lg md:rounded-sm md:shadow-pop"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-lg font-semibold text-ink">{title}</h2>
+          <h2 className="font-heading text-lg font-semibold text-ink">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"

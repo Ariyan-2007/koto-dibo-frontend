@@ -30,19 +30,21 @@ export function HouseholdSwitcher({ current }: { current: HouseholdDto }) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-left hover:bg-surface-muted"
+        className="flex w-full min-w-0 items-center gap-2 rounded-sm px-2.5 py-2.5 text-left hover:bg-surface-muted"
       >
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-ink leading-tight">{current.name}</p>
-          <p className="text-xs text-muted leading-tight">{current.callerRole}</p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-heading text-[15px] font-semibold text-ink leading-tight">{current.name}</p>
+          <p className="text-[11px] text-muted leading-tight">
+            {current.callerRole} · {current.memberCount} member{current.memberCount === 1 ? '' : 's'}
+          </p>
         </div>
-        <ChevronDown width={16} height={16} className="shrink-0 text-muted" />
+        <ChevronDown width={14} height={14} className="shrink-0 text-muted" />
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div role="listbox" aria-label="Switch household" className="absolute left-0 top-full z-50 mt-1 w-64 rounded-md border border-border bg-surface py-1 shadow-card">
+          <div role="listbox" aria-label="Switch household" className="absolute left-0 top-full z-50 mt-1 w-64 rounded-sm border border-border bg-surface py-1 shadow-pop">
             {(households ?? []).map((h) => (
               <button
                 key={h.id}
@@ -70,7 +72,7 @@ export function HouseholdSwitcher({ current }: { current: HouseholdDto }) {
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink hover:bg-surface-muted"
             >
               <Plus width={16} height={16} />
-              All Households
+              All households
             </button>
           </div>
         </>

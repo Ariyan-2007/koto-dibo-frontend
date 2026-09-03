@@ -54,7 +54,17 @@ export function PersonalDashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-ink">Dashboard</h1>
+      <div>
+        <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">
+          Personal finance · {PRESETS.find((p) => p.value === preset)?.label}
+        </p>
+        <h1 className="font-num mt-0.5 font-heading text-[26px] font-semibold text-ink md:text-[32px]">
+          {data ? `${formatMoney(data.summary.totalSpent, currency)} spent` : 'Dashboard'}
+          {data?.summary.totalBudget ? (
+            <span className="text-muted"> of {formatMoney(data.summary.totalBudget, currency)}</span>
+          ) : null}
+        </h1>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <SelectField label="Period" value={preset} onChange={(e) => setPreset(e.target.value as DashboardPeriodPreset)}>
@@ -86,7 +96,7 @@ export function PersonalDashboardPage() {
         <p className="text-sm text-muted">Pick a custom date range to load the dashboard.</p>
       ) : (
         <>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border bg-border md:grid-cols-3">
             <StatTile label="Budgeted" value={formatMoney(data.summary.totalBudget, currency)} />
             <StatTile label="Spent" value={formatMoney(data.summary.totalSpent, currency)} />
             <StatTile
@@ -96,7 +106,7 @@ export function PersonalDashboardPage() {
             />
             <StatTile label="Used" value={formatPercent(data.summary.budgetUtilizationPercentage)} />
             <StatTile label="Expenses" value={String(data.summary.expenseCount)} />
-            <StatTile label="Avg / Expense" value={formatMoney(data.summary.averageExpense, currency)} />
+            <StatTile label="Avg / expense" value={formatMoney(data.summary.averageExpense, currency)} />
           </div>
 
           {data.budget.hasBudget ? (
@@ -152,28 +162,28 @@ export function PersonalDashboardPage() {
 
           {data.budgetVsActual.length > 0 && (
             <Card className="p-4">
-              <h2 className="mb-3 font-medium text-ink">Budget vs Actual</h2>
+              <h2 className="mb-3 text-[15px] font-semibold text-ink">Budget vs Actual</h2>
               <BudgetVsActualChart points={data.budgetVsActual} currency={currency} />
             </Card>
           )}
 
           {data.categoryBreakdown.length > 0 && (
             <Card className="p-4">
-              <h2 className="mb-3 font-medium text-ink">Category Breakdown</h2>
+              <h2 className="mb-3 text-[15px] font-semibold text-ink">Category Breakdown</h2>
               <CategoryBreakdownList items={data.categoryBreakdown} currency={currency} />
             </Card>
           )}
 
           {data.spendingTrend.length > 0 && (
             <Card className="p-4">
-              <h2 className="mb-3 font-medium text-ink">Spending Trend</h2>
+              <h2 className="mb-3 text-[15px] font-semibold text-ink">Spending Trend</h2>
               <SpendingTrendChart points={data.spendingTrend} currency={currency} />
             </Card>
           )}
 
           {data.overspending.length > 0 && (
             <Card className="border-danger-border p-4">
-              <h2 className="mb-3 font-medium text-danger">Overspending</h2>
+              <h2 className="mb-3 text-[15px] font-semibold text-danger">Overspending</h2>
               <CategoryBreakdownList items={data.overspending} currency={currency} />
             </Card>
           )}
@@ -181,7 +191,7 @@ export function PersonalDashboardPage() {
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {data.topCategories.length > 0 && (
               <Card className="p-4">
-                <h2 className="mb-3 font-medium text-ink">Top Categories</h2>
+                <h2 className="mb-3 text-[15px] font-semibold text-ink">Top Categories</h2>
                 <MagnitudeBarList
                   items={data.topCategories.map((c) => ({ key: c.categoryId, label: c.categoryName, amount: c.amount, percentageOfTotal: c.percentageOfTotal }))}
                   currency={currency}
@@ -190,7 +200,7 @@ export function PersonalDashboardPage() {
             )}
             {data.topMerchants.length > 0 && (
               <Card className="p-4">
-                <h2 className="mb-3 font-medium text-ink">Top Merchants</h2>
+                <h2 className="mb-3 text-[15px] font-semibold text-ink">Top Merchants</h2>
                 <MagnitudeBarList
                   items={data.topMerchants.map((m) => ({
                     key: m.merchant,
@@ -207,7 +217,7 @@ export function PersonalDashboardPage() {
 
           {data.upcomingExpenses.length > 0 && (
             <Card className="p-4">
-              <h2 className="mb-3 font-medium text-ink">Upcoming (Next 30 Days)</h2>
+              <h2 className="mb-3 text-[15px] font-semibold text-ink">Upcoming (Next 30 Days)</h2>
               <div className="flex flex-col gap-2">
                 {data.upcomingExpenses.map((u) => (
                   <div key={u.recurringExpenseId} className="flex items-center justify-between gap-2 text-sm">
@@ -226,7 +236,7 @@ export function PersonalDashboardPage() {
           )}
 
           <Card className="p-4">
-            <h2 className="mb-3 font-medium text-ink">Insights</h2>
+            <h2 className="mb-3 text-[15px] font-semibold text-ink">Insights</h2>
             <div className="flex flex-col gap-2 text-sm">
               {data.insights.highestSpendingCategory && (
                 <InsightRow label="Highest spending category" value={data.insights.highestSpendingCategory} />
@@ -256,7 +266,7 @@ export function PersonalDashboardPage() {
           {data.expenses.recentExpenses.length > 0 && (
             <Card className="p-4">
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="font-medium text-ink">Recent Expenses</h2>
+                <h2 className="text-[15px] font-semibold text-ink">Recent Expenses</h2>
                 <Link to="/expenses" className="text-sm font-medium text-primary">
                   View all →
                 </Link>
@@ -285,10 +295,10 @@ export function PersonalDashboardPage() {
 
 function StatTile({ label, value, danger }: { label: string; value: string; danger?: boolean }) {
   return (
-    <Card className="p-3 text-center">
-      <p className="text-xs text-muted">{label}</p>
-      <p className={cn('mt-1 font-semibold', danger ? 'text-danger' : 'text-ink')}>{value}</p>
-    </Card>
+    <div className="bg-surface p-3.5">
+      <p className="text-[10px] font-semibold tracking-widest text-muted uppercase">{label}</p>
+      <p className={cn('font-num mt-1 font-heading text-[19px] font-semibold', danger ? 'text-danger' : 'text-ink')}>{value}</p>
+    </div>
   )
 }
 

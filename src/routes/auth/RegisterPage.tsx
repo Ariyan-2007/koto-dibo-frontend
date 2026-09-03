@@ -52,7 +52,7 @@ export function RegisterPage() {
 
   return (
     <AuthLayout>
-      <h2 className="mb-5 text-lg font-semibold text-ink">Create Account</h2>
+      <h2 className="mb-5 font-heading text-lg font-semibold text-ink">Create account</h2>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <InputField
           label="Name"
@@ -82,14 +82,14 @@ export function RegisterPage() {
           required
         />
         {formError && <p className="text-sm text-danger">{formError}</p>}
-        <Button type="submit" isLoading={isLoading} className="w-full">
-          Create Account
+        <Button type="submit" isLoading={isLoading} framed className="w-full">
+          Create account
         </Button>
       </form>
       <p className="mt-5 text-center text-sm text-muted">
         Already have an account?{' '}
         <Link to="/login" state={location.state} className="font-medium text-primary">
-          Sign In
+          Sign in
         </Link>
       </p>
     </AuthLayout>

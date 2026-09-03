@@ -200,31 +200,36 @@ export function MealGridPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-ink">Meal Grid</h1>
-        <Link to={`/h/${household.id}/meals/settlement`}>
-          <Button variant="secondary" size="sm">
-            Settlement
-          </Button>
-        </Link>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setCursor((c) => (c.month === 0 ? { year: c.year - 1, month: 11 } : { year: c.year, month: c.month - 1 }))}
-          className="rounded-pill p-2 text-muted hover:bg-surface-muted"
-          aria-label="Previous month"
-        >
-          <ChevronLeft />
-        </button>
-        <p className="font-medium text-ink">{label}</p>
-        <button
-          onClick={() => setCursor((c) => (c.month === 11 ? { year: c.year + 1, month: 0 } : { year: c.year, month: c.month + 1 }))}
-          className="rounded-pill p-2 text-muted hover:bg-surface-muted"
-          aria-label="Next month"
-        >
-          <ChevronRight />
-        </button>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Meals · {label}</p>
+          <h1 className="font-num mt-0.5 text-[26px] font-heading font-semibold text-ink md:text-[32px]">
+            {isLoading ? '···' : grandTotal} served
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCursor((c) => (c.month === 0 ? { year: c.year - 1, month: 11 } : { year: c.year, month: c.month - 1 }))}
+              className="rounded-sm border border-border p-1.5 text-muted hover:bg-surface-muted"
+              aria-label="Previous month"
+            >
+              <ChevronLeft width={16} height={16} />
+            </button>
+            <button
+              onClick={() => setCursor((c) => (c.month === 11 ? { year: c.year + 1, month: 0 } : { year: c.year, month: c.month + 1 }))}
+              className="rounded-sm border border-border p-1.5 text-muted hover:bg-surface-muted"
+              aria-label="Next month"
+            >
+              <ChevronRight width={16} height={16} />
+            </button>
+          </div>
+          <Link to={`/h/${household.id}/meals/settlement`}>
+            <Button variant="secondary" size="sm">
+              Settlement
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {isLoading ? (
@@ -454,7 +459,7 @@ export function MealGridPage() {
       )}
 
       <p className="text-xs text-muted">
-        Empty = no entry recorded. <span className="rounded-pill bg-surface-muted px-1.5 py-0.5">0</span> = explicitly excluded that
+        Empty = no entry recorded. <span className="rounded-[2px] bg-surface-muted px-1.5 py-0.5">0</span> = explicitly excluded that
         day.
         {pendingKeys.size > 0 && (
           <>

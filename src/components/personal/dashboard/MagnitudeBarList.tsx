@@ -26,8 +26,8 @@ export function MagnitudeBarList({ items, currency }: { items: MagnitudeItem[]; 
               {formatMoney(item.amount, currency)} · {formatPercent(item.percentageOfTotal)}
             </span>
           </div>
-          <div className="mt-1 h-1.5 rounded-pill bg-surface-muted">
-            <div className="h-1.5 rounded-pill bg-primary" style={{ width: `${(item.amount / max) * 100}%` }} />
+          <div className="mt-1 h-1.5 rounded-[2px] bg-surface-muted">
+            <div className="h-1.5 rounded-[2px] bg-primary" style={{ width: `${(item.amount / max) * 100}%` }} />
           </div>
         </div>
       ))}

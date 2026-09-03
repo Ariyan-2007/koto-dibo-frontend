@@ -82,7 +82,7 @@ export function InviteMemberPage() {
           <Link to={`/h/${household.id}/settings`} className="text-muted hover:text-ink">
             <ArrowLeft width={20} height={20} />
           </Link>
-          <h1 className="text-xl font-semibold text-ink">Invite Member</h1>
+          <h1 className="font-heading text-[22px] font-semibold text-ink">Invite member</h1>
         </div>
         <Card className="p-5 text-sm text-muted">Only the Owner or a Manager can invite members to this household.</Card>
       </div>
@@ -95,7 +95,7 @@ export function InviteMemberPage() {
         <Link to={`/h/${household.id}/settings`} className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="text-xl font-semibold text-ink">Invite Member</h1>
+        <h1 className="font-heading text-[22px] font-semibold text-ink">Invite member</h1>
       </div>
 
       <Button onClick={() => setCreateOpen(true)} icon={<UserPlus width={18} height={18} />} className="self-start">
@@ -293,10 +293,8 @@ function InviteDetailSheet({
             </button>
           )}
 
-          <div className="flex items-center gap-2">
-            <span className="rounded-md border border-border bg-surface-muted px-4 py-2 font-mono text-lg font-semibold tracking-widest text-ink">
-              {invite.code}
-            </span>
+          <div className="corner-frame flex items-center gap-2 border border-border bg-surface-muted px-6 py-3 text-primary">
+            <span className="font-heading text-2xl font-semibold tracking-widest text-ink">{invite.code}</span>
             <Button variant="ghost" size="sm" onClick={() => copyText(invite.code, 'Code')} aria-label="Copy code">
               <Copy width={16} height={16} />
             </Button>

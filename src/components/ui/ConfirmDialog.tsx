@@ -46,10 +46,10 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-label={title}
         aria-describedby={description ? 'confirm-dialog-description' : undefined}
-        className="w-full max-w-sm rounded-t-lg bg-surface p-6 shadow-sheet md:rounded-lg md:shadow-card"
+        className="w-full max-w-sm rounded-t-lg border border-border bg-surface p-6 shadow-sheet md:rounded-sm md:shadow-pop"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold text-ink">{title}</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{title}</h2>
         {description && (
           <p id="confirm-dialog-description" className="mt-2 text-sm text-muted">
             {description}

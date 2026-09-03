@@ -28,17 +28,17 @@ export function CategoryEnvelopeCard({
     <Card className="p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate font-medium text-ink">{category.categoryName}</p>
-          <p className="text-xs text-muted">
-            {formatMoney(category.spent, currency)} of {formatMoney(category.totalAvailable, currency)}
+          <p className="truncate font-heading text-[15px] font-semibold text-ink">{category.categoryName}</p>
+          <p className="font-num text-xs text-muted">
+            {formatMoney(category.spent, currency)} / {formatMoney(category.totalAvailable, currency)}
             {category.rolloverAmount !== 0 && ` (incl. ${formatMoney(category.rolloverAmount, currency)} rollover)`}
           </p>
         </div>
         <Badge tone={BUDGET_CATEGORY_STATUS_TONE[category.status]}>{BUDGET_CATEGORY_STATUS_LABEL[category.status]}</Badge>
       </div>
 
-      <div className="mt-3 h-2 rounded-pill bg-surface-muted">
-        <div className={cn('h-2 rounded-pill', barTone)} style={{ width: `${pct}%` }} />
+      <div className="mt-3 h-2.5 rounded-[2px] bg-surface-muted">
+        <div className={cn('h-2.5 rounded-[2px]', barTone)} style={{ width: `${pct}%` }} />
       </div>
 
       <div className="mt-1.5 flex items-center justify-between text-xs text-muted">

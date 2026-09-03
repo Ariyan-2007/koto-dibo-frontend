@@ -16,9 +16,15 @@ export function HouseholdsTab() {
 
   return (
     <div className="flex flex-col gap-4 pb-20">
-      <Link to="/join" className="text-sm font-medium text-primary">
-        Have an invite code? Join a household →
-      </Link>
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Koto Dibo</p>
+          <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Your households</h1>
+        </div>
+        <Link to="/join" className="text-sm font-medium text-primary">
+          Have a code? Join →
+        </Link>
+      </div>
 
       {isLoading ? (
         <SkeletonList rows={3} />
@@ -27,11 +33,11 @@ export function HouseholdsTab() {
           {households.map((h) => (
             <Link key={h.id} to={`/h/${h.id}`}>
               <Card className="flex items-center gap-3 p-4 hover:border-primary focus-visible:outline-none focus-visible:shadow-focus">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-primary-soft text-primary">
                   <Home width={20} height={20} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-ink">{h.name}</p>
+                  <p className="truncate font-heading font-semibold text-ink">{h.name}</p>
                   <p className="flex items-center gap-1 text-xs text-muted">
                     <Users width={13} height={13} />
                     {h.memberCount} member{h.memberCount === 1 ? '' : 's'}
@@ -56,10 +62,11 @@ export function HouseholdsTab() {
 
       <Button
         onClick={() => setCreateOpen(true)}
-        className="fixed bottom-6 right-6 shadow-card"
+        framed
+        className="fixed right-6 bottom-6 shadow-pop"
         icon={<Plus width={18} height={18} />}
       >
-        New Household
+        New household
       </Button>
 
       <CreateHouseholdSheet open={createOpen} onClose={() => setCreateOpen(false)} />

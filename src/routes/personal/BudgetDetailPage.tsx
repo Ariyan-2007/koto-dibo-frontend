@@ -18,7 +18,6 @@ import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { formatMoney, formatDate, formatPercent } from '@/lib/format'
 import { BUDGET_HEALTH_LABEL, BUDGET_HEALTH_TONE, PERIOD_TYPE_LABEL } from '@/lib/personal/labels'
-import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Sheet } from '@/components/ui/Sheet'
@@ -139,8 +138,8 @@ export function BudgetDetailPage() {
         <Link to="/budgets" className="text-muted hover:text-ink">
           <ArrowLeft width={20} height={20} />
         </Link>
-        <h1 className="flex-1 truncate text-xl font-semibold text-ink">{budget.name}</h1>
-        <button onClick={() => setEditOpen(true)} aria-label="Edit budget" className="rounded-pill p-2.5 text-muted hover:bg-surface-muted hover:text-ink">
+        <h1 className="flex-1 truncate font-heading text-[22px] font-semibold text-ink">{budget.name}</h1>
+        <button onClick={() => setEditOpen(true)} aria-label="Edit budget" className="rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink">
           <Pencil width={18} height={18} />
         </button>
       </div>
@@ -155,7 +154,7 @@ export function BudgetDetailPage() {
 
       {budget.description && <p className="text-sm text-muted">{budget.description}</p>}
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-px overflow-hidden rounded-sm border border-border bg-border">
         <SummaryTile label="Planned" value={formatMoney(budget.totalPlanned, budget.currency)} />
         <SummaryTile label="Rollover" value={formatMoney(budget.totalRollover, budget.currency)} />
         <SummaryTile label="Available" value={formatMoney(budget.totalAvailable, budget.currency)} />
@@ -183,7 +182,7 @@ export function BudgetDetailPage() {
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-medium text-ink">Category Envelopes</h2>
+          <h2 className="font-heading text-[15px] font-semibold text-ink">Category envelopes</h2>
           {canManage && (
             <button onClick={() => setAddCategoryOpen(true)} className="flex items-center gap-1 text-sm font-medium text-primary">
               <Plus width={15} height={15} /> Add
@@ -264,10 +263,10 @@ export function BudgetDetailPage() {
 
 function SummaryTile({ label, value, danger }: { label: string; value: string; danger?: boolean }) {
   return (
-    <Card className="p-3 text-center">
-      <p className="text-xs text-muted">{label}</p>
-      <p className={`mt-1 font-semibold ${danger ? 'text-danger' : 'text-ink'}`}>{value}</p>
-    </Card>
+    <div className="bg-surface p-3.5 text-center">
+      <p className="text-[10px] font-semibold tracking-widest text-muted uppercase">{label}</p>
+      <p className={`font-num mt-1 font-heading text-[17px] font-semibold ${danger ? 'text-danger' : 'text-ink'}`}>{value}</p>
+    </div>
   )
 }
 

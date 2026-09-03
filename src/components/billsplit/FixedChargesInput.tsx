@@ -79,7 +79,7 @@ export function FixedChargesInput({
             key={preset}
             type="button"
             onClick={() => onChange([...rows, emptyFixedChargeRow(preset)])}
-            className="rounded-pill border border-border px-3 py-1 text-xs text-muted hover:bg-surface-muted"
+            className="rounded-sm border border-border px-3 py-1 text-xs text-muted hover:bg-surface-muted"
           >
             + {preset}
           </button>
@@ -87,7 +87,7 @@ export function FixedChargesInput({
         <button
           type="button"
           onClick={() => onChange([...rows, emptyFixedChargeRow()])}
-          className="rounded-pill border border-dashed border-border px-3 py-1 text-xs text-muted hover:bg-surface-muted"
+          className="rounded-sm border border-dashed border-border px-3 py-1 text-xs text-muted hover:bg-surface-muted"
         >
           + Add a fee
         </button>

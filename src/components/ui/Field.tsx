@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTML
 import { cn } from '@/lib/cn'
 
 const controlClasses =
-  'h-11 w-full rounded-md border border-border bg-surface px-3 text-[15px] text-ink placeholder:text-muted ' +
+  'h-11 w-full rounded-sm border border-border bg-surface-muted px-3 text-[15px] text-ink placeholder:text-muted ' +
   'focus:outline-none focus:border-primary focus:shadow-focus disabled:opacity-50'
 
 interface FieldShellProps {
@@ -17,7 +17,7 @@ interface FieldShellProps {
 export function FieldShell({ label, htmlFor, error, hint, children, required }: FieldShellProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-ink">
+      <label htmlFor={htmlFor} className="text-[12px] font-medium text-muted">
         {label}
         {required && <span className="text-danger"> *</span>}
       </label>

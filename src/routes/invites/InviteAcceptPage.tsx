@@ -93,7 +93,7 @@ export function InviteAcceptPage() {
             <span className="font-semibold">{preview.householdName}</span> as a{' '}
             <span className="font-semibold">{preview.role}</span>
           </p>
-          <Button onClick={() => acceptMutation.mutate()} isLoading={acceptMutation.isPending} className="w-full">
+          <Button onClick={() => acceptMutation.mutate()} isLoading={acceptMutation.isPending} framed className="w-full">
             Join {preview.householdName}
           </Button>
         </div>
