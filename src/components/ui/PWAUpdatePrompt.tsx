@@ -18,7 +18,7 @@ export function PWAUpdatePrompt() {
   return (
     <div
       role="alert"
-      className="pt-safe fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-3"
+      className="fixed inset-x-0 top-0 z-100 flex justify-center px-4 pt-3 pt-safe"
     >
       <div className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 text-sm shadow-card">
         <RefreshCw width={18} height={18} className="shrink-0 text-primary" />

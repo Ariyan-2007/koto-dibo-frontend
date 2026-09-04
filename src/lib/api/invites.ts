@@ -5,7 +5,8 @@ export function createInvite(
   householdId: string,
   input: { email?: string; role: HouseholdRole; expiresInHours?: number },
 ) {
-  return api.post<HouseholdInviteDto>(`/households/${householdId}/invites`, input)
+  const baseUrl = `${window.location.origin}/invites`
+  return api.post<HouseholdInviteDto>(`/households/${householdId}/invites`, { ...input, baseUrl })
 }
 
 export function listInvites(householdId: string) {
