@@ -15,8 +15,8 @@ export function HouseholdsTab() {
   const { data: households, isLoading } = useQuery({ queryKey: ['households'], queryFn: listHouseholds })
 
   return (
-    <div className="flex flex-col gap-4 pb-20">
-      <div className="flex items-end justify-between gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold tracking-widest text-primary-active uppercase">Koto Dibo</p>
           <h1 className="mt-0.5 font-heading text-[26px] font-semibold text-ink">Your households</h1>
@@ -60,12 +60,7 @@ export function HouseholdsTab() {
         />
       )}
 
-      <Button
-        onClick={() => setCreateOpen(true)}
-        framed
-        className="fixed right-6 bottom-6 shadow-pop"
-        icon={<Plus width={18} height={18} />}
-      >
+      <Button onClick={() => setCreateOpen(true)} framed icon={<Plus width={18} height={18} />}>
         New household
       </Button>
 
