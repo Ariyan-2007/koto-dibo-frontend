@@ -76,6 +76,7 @@ export interface BazarPurchaseDto {
   id: string
   householdId: string
   purchasedByUserId: string
+  createdByUserId: string
   date: string
   amount: number
   currency: string
@@ -91,6 +92,7 @@ export interface ContributionDto {
   id: string
   householdId: string
   contributedByUserId: string
+  createdByUserId: string
   date: string
   amount: number
   currency: string
@@ -109,6 +111,30 @@ export interface HouseholdBalanceDto {
   currentBalance: number
   currency: string
   asOf: string
+}
+
+export type LedgerEntryType = 'Contribution' | 'BazarPurchase'
+export type LedgerDirection = 'In' | 'Out'
+
+/** The unified Bazar+Contribution feed behind `HouseholdBalanceDto` (MVP_FRONTEND_BLUEPRINT.md §2.3). */
+export interface HouseholdLedgerTransactionDto {
+  id: string
+  householdId: string
+  entryType: LedgerEntryType
+  direction: LedgerDirection
+  /** Sum this, not `amount` — each row's actual signed effect on `CurrentBalance`. */
+  balanceImpact: number
+  date: string
+  amount: number
+  currency: string
+  userId: string
+  createdByUserId: string
+  sourceType: BazarFundingSource | ContributionSourceType
+  linkedEntryId: string | null
+  note: string | null
+  status: FinancialEntryStatus
+  createdAt: string
+  updatedAt: string
 }
 
 export interface DailyMealEntryDto {

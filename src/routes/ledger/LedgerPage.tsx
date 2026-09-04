@@ -17,6 +17,7 @@ export function LedgerPage() {
         {[
           { to: `${base}/bazar`, label: 'Bazar' },
           { to: `${base}/contributions`, label: 'Contributions' },
+          { to: `${base}/transactions`, label: 'Transactions' },
         ].map((tab, i) => (
           <NavLink
             key={tab.to}

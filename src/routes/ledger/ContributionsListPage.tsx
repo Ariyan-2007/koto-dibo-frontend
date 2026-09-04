@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
 import { listMembers } from '@/lib/api/households'
-import { cancelContribution, createContribution, listContributions, updateContribution } from '@/lib/api/contributions'
+import { cancelContribution, createContribution, createContributionFor, listContributions, updateContribution } from '@/lib/api/contributions'
 import type { ContributionDto } from '@/lib/api/types'
-import { canAddEntry, canEditEntry } from '@/lib/permissions'
+import { canAddContributionForOthers, canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
@@ -57,8 +57,13 @@ export function ContributionsListPage() {
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['contributions', household.id] })
 
+  const canAddForOthers = canAddContributionForOthers(household.callerRole)
+
   const createMutation = useMutation({
-    mutationFn: (values: LedgerFormValues) => createContribution(household.id, { ...values, notes: values.note || undefined }),
+    mutationFn: ({ userId, ...values }: LedgerFormValues) => {
+      const input = { ...values, notes: values.note || undefined }
+      return userId && userId !== currentUserId ? createContributionFor(household.id, userId, input) : createContribution(household.id, input)
+    },
     onSuccess: () => {
       invalidate()
       toast.success('Contribution added')
@@ -127,6 +132,9 @@ export function ContributionsListPage() {
                 key={entry.id}
                 entry={{ ...entry, note: entry.notes }}
                 byName={nameByUser.get(entry.contributedByUserId) ?? '—'}
+                recordedByName={
+                  entry.createdByUserId !== entry.contributedByUserId ? (nameByUser.get(entry.createdByUserId) ?? '—') : undefined
+                }
                 householdId={household.id}
                 canEdit={entry.sourceType !== 'AutoFromBazar' && canEditEntry(household.callerRole, entry.contributedByUserId, currentUserId)}
                 onEdit={() => {
@@ -164,6 +172,9 @@ export function ContributionsListPage() {
         noteLabel="Notes"
         isSubmitting={createMutation.isPending || updateMutation.isPending}
         fieldErrors={fieldErrors}
+        showMemberPicker={canAddForOthers && formOpen === 'create'}
+        members={members}
+        currentUserId={currentUserId}
         initial={
           editingEntry
             ? { date: editingEntry.date, amount: editingEntry.amount, currency: editingEntry.currency, note: editingEntry.notes ?? '' }

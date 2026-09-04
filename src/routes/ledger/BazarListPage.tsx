@@ -156,6 +156,9 @@ export function BazarListPage() {
                 key={entry.id}
                 entry={entry}
                 byName={nameByUser.get(entry.purchasedByUserId) ?? '—'}
+                recordedByName={
+                  entry.createdByUserId !== entry.purchasedByUserId ? (nameByUser.get(entry.createdByUserId) ?? '—') : undefined
+                }
                 householdId={household.id}
                 canEdit={canEditEntry(household.callerRole, entry.purchasedByUserId, currentUserId)}
                 onEdit={() => {

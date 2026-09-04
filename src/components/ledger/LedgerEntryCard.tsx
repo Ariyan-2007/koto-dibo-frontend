@@ -24,6 +24,7 @@ export interface LedgerEntryView {
 export function LedgerEntryCard({
   entry,
   byName,
+  recordedByName,
   canEdit,
   onEdit,
   onCancel,
@@ -31,6 +32,8 @@ export function LedgerEntryCard({
 }: {
   entry: LedgerEntryView
   byName: string
+  /** The actual submitter's name, passed only when it differs from `byName` (an on-behalf-of entry). */
+  recordedByName?: string
   canEdit: boolean
   onEdit: () => void
   onCancel: () => void
@@ -58,6 +61,7 @@ export function LedgerEntryCard({
         </div>
         <p className="truncate text-xs text-muted">
           {formatDate(entry.date)} · {byName}
+          {recordedByName && ` · Recorded by ${recordedByName}`}
           {entry.note && ` · ${entry.note}`}
         </p>
         {entry.linkedContributionId && householdId && (

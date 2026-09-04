@@ -11,6 +11,7 @@ import { LedgerHistoryPage } from '@/routes/settlement/LedgerHistoryPage'
 import { LedgerPage } from '@/routes/ledger/LedgerPage'
 import { BazarListPage } from '@/routes/ledger/BazarListPage'
 import { ContributionsListPage } from '@/routes/ledger/ContributionsListPage'
+import { TransactionsListPage } from '@/routes/ledger/TransactionsListPage'
 import { MealGridPage } from '@/routes/meals/MealGridPage'
 import { MealSettlementPage } from '@/routes/meals/MealSettlementPage'
 import { BillSplitListPage } from '@/routes/billsplits/BillSplitListPage'
@@ -58,6 +59,7 @@ export default function App() {
               <Route index element={<Navigate to="bazar" replace />} />
               <Route path="bazar" element={<BazarListPage />} />
               <Route path="contributions" element={<ContributionsListPage />} />
+              <Route path="transactions" element={<TransactionsListPage />} />
             </Route>
 
             <Route path="meals" element={<MealGridPage />} />

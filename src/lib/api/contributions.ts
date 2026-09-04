@@ -20,6 +20,10 @@ export function createContribution(householdId: string, input: ContributionInput
   return api.post<ContributionDto>(`/households/${householdId}/contributions`, input)
 }
 
+export function createContributionFor(householdId: string, userId: string, input: ContributionInput) {
+  return api.post<ContributionDto>(`/households/${householdId}/contributions/${userId}`, input)
+}
+
 export function updateContribution(householdId: string, contributionId: string, input: Partial<ContributionInput>) {
   return api.patch<ContributionDto>(`/households/${householdId}/contributions/${contributionId}`, input)
 }
