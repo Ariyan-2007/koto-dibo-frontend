@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
-import { addMember, changeMemberRole, listMembers, removeMember } from '@/lib/api/households'
+import { addMember, changeMemberRole, listMembers, removeMember, transferOwnership } from '@/lib/api/households'
 import type { HouseholdMemberDto, HouseholdRole } from '@/lib/api/types'
 import { canChangeRole, canManageHousehold, canRemoveMember } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom'
 const ROLES: HouseholdRole[] = ['Manager', 'Member', 'Viewer']
 
 const ROLE_DESCRIPTIONS: Record<HouseholdRole, string> = {
-  Owner: 'Full control, including archiving the household. Can\'t be removed or changed here.',
+  Owner: 'Full control, including archiving the household. Can\'t be removed or role-changed — only moved via "Make Owner."',
   Manager: 'Can do everything an Owner can, except remove or demote the Owner or another Manager.',
   Member: 'Can add and edit their own entries — bazar, contributions, meals, bill splits.',
   Viewer: 'Can see everything but can\'t add or change anything — good for keeping someone in the loop.',
@@ -31,7 +31,9 @@ export function MembersPage() {
   const canManage = canManageHousehold(household.callerRole)
   const [addOpen, setAddOpen] = useState(false)
   const [removeTarget, setRemoveTarget] = useState<HouseholdMemberDto | null>(null)
+  const [transferTarget, setTransferTarget] = useState<HouseholdMemberDto | null>(null)
   const [legendOpen, setLegendOpen] = useState(false)
+  const isOwner = household.callerRole === 'Owner'
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['members', household.id],
@@ -58,6 +60,24 @@ export function MembersPage() {
       toast.success('Role updated')
     },
     onError: (err) => toast.error(errorMessage(err)),
+  })
+
+  const transferMutation = useMutation({
+    mutationFn: (userId: string) => transferOwnership(household.id, userId),
+    onSuccess: (_, userId) => {
+      // Demotes the caller to Manager atomically — refetch the household itself (CallerRole,
+      // OwnerUserId) too, not just the member list, since every gate on this page reads from it.
+      queryClient.invalidateQueries({ queryKey: ['members', household.id] })
+      queryClient.invalidateQueries({ queryKey: ['household', household.id] })
+      queryClient.invalidateQueries({ queryKey: ['households'] })
+      const newOwner = members?.find((m) => m.userId === userId)
+      toast.success(newOwner ? `${newOwner.name} is now the Owner` : 'Ownership transferred')
+      setTransferTarget(null)
+    },
+    onError: (err) => {
+      toast.error(errorMessage(err))
+      setTransferTarget(null)
+    },
   })
 
   return (
@@ -119,6 +139,11 @@ export function MembersPage() {
                 ) : (
                   <Badge tone={m.role === 'Owner' ? 'primary' : 'muted'}>{m.role}</Badge>
                 )}
+                {isOwner && m.role !== 'Owner' && (
+                  <Button variant="ghost" size="sm" onClick={() => setTransferTarget(m)}>
+                    Make Owner
+                  </Button>
+                )}
                 {canManage && canRemoveMember(household.callerRole, m.role) && (
                   <Button variant="ghost" size="sm" className="text-danger" onClick={() => setRemoveTarget(m)}>
                     Remove
@@ -152,6 +177,17 @@ export function MembersPage() {
         isLoading={removeMutation.isPending}
         onConfirm={() => removeTarget && removeMutation.mutate(removeTarget.userId)}
         onCancel={() => setRemoveTarget(null)}
+      />
+
+      <ConfirmDialog
+        open={!!transferTarget}
+        title={`Make ${transferTarget?.name ?? 'This Member'} the Owner?`}
+        description="You'll be demoted to Manager. Full control of the household — including archiving it — moves to them immediately."
+        confirmLabel="Transfer Ownership"
+        danger
+        isLoading={transferMutation.isPending}
+        onConfirm={() => transferTarget && transferMutation.mutate(transferTarget.userId)}
+        onCancel={() => setTransferTarget(null)}
       />
     </div>
   )

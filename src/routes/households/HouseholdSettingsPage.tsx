@@ -103,6 +103,10 @@ export function HouseholdSettingsPage() {
   }
 
   const isLastActiveOwner = household.callerRole === 'Owner' && household.memberCount === 1
+  // The API 400s ("Transfer ownership first") if the Owner tries to leave with others still
+  // active — caught client-side so "Leave" never fires a call that's guaranteed to fail; the
+  // dialog instead routes straight to the transfer-ownership action on the Members page.
+  const ownerBlockedFromLeaving = household.callerRole === 'Owner' && !isLastActiveOwner
 
   return (
     <div className="flex flex-col gap-6">
@@ -228,18 +232,27 @@ export function HouseholdSettingsPage() {
       />
       <ConfirmDialog
         open={confirmAction === 'leave'}
-        title={isLastActiveOwner ? 'Leave and Archive This Household?' : 'Leave This Household?'}
+        title={
+          isLastActiveOwner ? 'Leave and Archive This Household?' : ownerBlockedFromLeaving ? 'Transfer Ownership First' : 'Leave This Household?'
+        }
         description={
           isLastActiveOwner
             ? "You're the only member — leaving will archive the household."
-            : household.callerRole === 'Owner'
-              ? 'Transfer ownership to another member first — the owner can\'t leave while others remain.'
+            : ownerBlockedFromLeaving
+              ? "As Owner, you can't leave while other members remain — transfer ownership to one of them first, then you're free to leave."
               : "You'll lose access to its ledgers, meals, and bill splits."
         }
-        confirmLabel="Leave"
-        danger
+        confirmLabel={ownerBlockedFromLeaving ? 'Go to Members' : 'Leave'}
+        danger={!ownerBlockedFromLeaving}
         isLoading={leaveMutation.isPending}
-        onConfirm={() => leaveMutation.mutate()}
+        onConfirm={() => {
+          if (ownerBlockedFromLeaving) {
+            setConfirmAction(null)
+            navigate(`/h/${household.id}/settings/members`)
+          } else {
+            leaveMutation.mutate()
+          }
+        }}
         onCancel={() => setConfirmAction(null)}
       />
     </div>

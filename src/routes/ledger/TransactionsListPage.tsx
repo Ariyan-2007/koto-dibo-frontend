@@ -1,14 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
 import { listMembers } from '@/lib/api/households'
 import { getHouseholdBalance, listHouseholdLedgerTransactions } from '@/lib/api/balance'
+import { LedgerFilterSheet, activeLedgerFilterCount, type LedgerFilterValues } from '@/components/ledger/LedgerFilterSheet'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList, Skeleton } from '@/components/ui/Skeleton'
-import { History, ArrowUpRight, ArrowDownRight } from '@/components/ui/icons'
+import { History, ArrowUpRight, ArrowDownRight, Filter } from '@/components/ui/icons'
 import { formatMoney, formatDate } from '@/lib/format'
 import { cn } from '@/lib/cn'
 
@@ -24,10 +25,12 @@ const SOURCE_LABEL: Record<string, string> = {
  * frontend re-deriving that from two separate lists. */
 export function TransactionsListPage() {
   const { household } = useHouseholdContext()
+  const [filter, setFilter] = useState<LedgerFilterValues>({})
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data: transactions, isLoading } = useQuery({
-    queryKey: ['ledgerTransactions', household.id],
-    queryFn: () => listHouseholdLedgerTransactions(household.id),
+    queryKey: ['ledgerTransactions', household.id, filter],
+    queryFn: () => listHouseholdLedgerTransactions(household.id, filter),
   })
   const { data: balance } = useQuery({ queryKey: ['householdBalance', household.id], queryFn: () => getHouseholdBalance(household.id) })
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
@@ -37,6 +40,7 @@ export function TransactionsListPage() {
     () => [...(transactions ?? [])].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
     [transactions],
   )
+  const filterCount = activeLedgerFilterCount(filter)
 
   return (
     <div className="flex flex-col gap-3">
@@ -53,6 +57,19 @@ export function TransactionsListPage() {
           </p>
         )}
       </Card>
+
+      <button
+        onClick={() => setFiltersOpen(true)}
+        aria-label="Filter transactions"
+        className="relative self-end rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
+      >
+        <Filter width={18} height={18} />
+        {filterCount > 0 && (
+          <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-pill bg-primary text-[10px] font-semibold text-on-primary">
+            {filterCount}
+          </span>
+        )}
+      </button>
 
       {isLoading ? (
         <SkeletonList />
@@ -105,8 +122,16 @@ export function TransactionsListPage() {
           )
         })
       ) : (
-        <EmptyState icon={<History width={28} height={28} />} title="No Transactions Yet" description="Bazar purchases and contributions will show up here as one combined history." />
+        <EmptyState
+          icon={<History width={28} height={28} />}
+          title={filterCount > 0 ? 'No Matching Transactions' : 'No Transactions Yet'}
+          description={
+            filterCount > 0 ? 'Try widening your filters.' : 'Bazar purchases and contributions will show up here as one combined history.'
+          }
+        />
       )}
+
+      <LedgerFilterSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filter Transactions" value={filter} onApply={setFilter} />
     </div>
   )
 }

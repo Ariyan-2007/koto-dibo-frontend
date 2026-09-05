@@ -9,12 +9,13 @@ import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
 import { LedgerFormSheet, type LedgerFormValues } from '@/components/ledger/LedgerFormSheet'
+import { LedgerFilterSheet, activeLedgerFilterCount, type LedgerFilterValues } from '@/components/ledger/LedgerFilterSheet'
 import { MemberFilterTabs } from '@/components/ledger/MemberFilterTabs'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
-import { Wallet, Plus } from '@/components/ui/icons'
+import { Wallet, Plus, Filter } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/format'
 
 export function ContributionsListPage() {
@@ -24,10 +25,12 @@ export function ContributionsListPage() {
   const [deleteTarget, setDeleteTarget] = useState<ContributionDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
+  const [filter, setFilter] = useState<LedgerFilterValues>({})
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data: entries, isLoading } = useQuery({
-    queryKey: ['contributions', household.id],
-    queryFn: () => listContributions(household.id),
+    queryKey: ['contributions', household.id, filter],
+    queryFn: () => listContributions(household.id, filter),
   })
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
   const nameByUser = useMemo(() => new Map((members ?? []).map((m) => [m.userId, m.name])), [members])
@@ -110,9 +113,23 @@ export function ContributionsListPage() {
   }
 
   const editingEntry = formOpen && formOpen !== 'create' ? formOpen : null
+  const filterCount = activeLedgerFilterCount(filter)
 
   return (
     <div className="flex flex-col gap-3">
+      <button
+        onClick={() => setFiltersOpen(true)}
+        aria-label="Filter contributions"
+        className="relative self-end rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
+      >
+        <Filter width={18} height={18} />
+        {filterCount > 0 && (
+          <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-pill bg-primary text-[10px] font-semibold text-on-primary">
+            {filterCount}
+          </span>
+        )}
+      </button>
+
       {isLoading ? (
         <SkeletonList />
       ) : sortedEntries.length > 0 ? (
@@ -149,7 +166,11 @@ export function ContributionsListPage() {
           )}
         </>
       ) : (
-        <EmptyState icon={<Wallet width={28} height={28} />} title="No Contributions Yet" />
+        <EmptyState
+          icon={<Wallet width={28} height={28} />}
+          title={filterCount > 0 ? 'No Matching Contributions' : 'No Contributions Yet'}
+          description={filterCount > 0 ? 'Try widening your filters.' : undefined}
+        />
       )}
 
       {canAddEntry(household.callerRole) && (
@@ -185,6 +206,8 @@ export function ContributionsListPage() {
           else createMutation.mutate(values)
         }}
       />
+
+      <LedgerFilterSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filter Contributions" value={filter} onApply={setFilter} />
 
       <ConfirmDialog
         open={!!deleteTarget}

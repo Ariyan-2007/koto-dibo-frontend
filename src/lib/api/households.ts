@@ -41,6 +41,12 @@ export function changeMemberRole(householdId: string, userId: string, role: Hous
   return api.patch<HouseholdMemberDto>(`/households/${householdId}/members/${userId}/role`, { role })
 }
 
+/** Owner-only. Atomically promotes `newOwnerUserId` to Owner and demotes the caller to Manager —
+ * the only way to change the Owner row (`PATCH .../role` always rejects it). */
+export function transferOwnership(householdId: string, newOwnerUserId: string) {
+  return api.post<HouseholdMemberDto>(`/households/${householdId}/transfer-ownership`, { newOwnerUserId })
+}
+
 export function leaveHousehold(householdId: string) {
   return api.post<void>(`/households/${householdId}/leave`)
 }

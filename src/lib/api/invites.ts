@@ -5,8 +5,10 @@ export function createInvite(
   householdId: string,
   input: { email?: string; role: HouseholdRole; expiresInHours?: number },
 ) {
-  const baseUrl = `${window.location.origin}/invites`
-  return api.post<HouseholdInviteDto>(`/households/${householdId}/invites`, { ...input, baseUrl })
+  // Validated server-side against Cors:AllowedOrigins — must be a bare origin (scheme://host[:port],
+  // no path), never something user-influenced. The backend appends `/invites/{code}` itself to
+  // build InviteLink.
+  return api.post<HouseholdInviteDto>(`/households/${householdId}/invites`, { ...input, baseUrl: window.location.origin })
 }
 
 export function listInvites(householdId: string) {

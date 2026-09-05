@@ -6,7 +6,7 @@ export function BandStack({ bands, currency }: { bands: BillSplitBandDto[]; curr
   return (
     <Card className="p-5">
       <h2 className="mb-1 font-medium text-ink">Why It Cost This Much</h2>
-      <p className="mb-4 text-sm text-muted">Band stack — attributed usage is billed first against the cheapest units.</p>
+      <p className="mb-4 text-sm text-muted">Band stack — metered usage is attributed against the most expensive bands first.</p>
       <div className="flex flex-col gap-3">
         {bands.map((band, i) => {
           const attributedPct = band.unitsInBand > 0 ? (band.attributedUnits / band.unitsInBand) * 100 : 0

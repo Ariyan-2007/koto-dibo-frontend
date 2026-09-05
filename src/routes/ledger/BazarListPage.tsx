@@ -7,16 +7,17 @@ import type { BazarPurchaseDto } from '@/lib/api/types'
 import { canAddBazarForOthers, canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
 import { toast, errorMessage } from '@/lib/toast'
-import { currentMonthKey } from '@/lib/ledger/period'
+import { currentMonthKey, monthKeyRange } from '@/lib/ledger/period'
 import { LedgerEntryCard } from '@/components/ledger/LedgerEntryCard'
 import { LedgerFormSheet, type LedgerFormValues } from '@/components/ledger/LedgerFormSheet'
+import { LedgerFilterSheet, activeLedgerFilterCount, type LedgerFilterValues } from '@/components/ledger/LedgerFilterSheet'
 import { MemberFilterTabs } from '@/components/ledger/MemberFilterTabs'
 import { MonthEndReconciliationCard } from '@/components/ledger/MonthEndReconciliationCard'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/Skeleton'
-import { Cart, Plus, Wallet } from '@/components/ui/icons'
+import { Cart, Plus, Wallet, Filter } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/format'
 
 export function BazarListPage() {
@@ -27,12 +28,24 @@ export function BazarListPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | undefined>()
   const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
+  const [filter, setFilter] = useState<LedgerFilterValues>({})
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data: entries, isLoading } = useQuery({
-    queryKey: ['bazar', household.id],
-    queryFn: () => listBazar(household.id),
+    queryKey: ['bazar', household.id, filter],
+    queryFn: () => listBazar(household.id, filter),
   })
   const { data: members } = useQuery({ queryKey: ['members', household.id], queryFn: () => listMembers(household.id) })
+  // The month-end leftover prompt is about the real current calendar month, independent of
+  // whatever date range/status the list above is filtered to — fetched separately so it stays
+  // correct even when the visible list is scoped elsewhere.
+  const { data: currentMonthEntries } = useQuery({
+    queryKey: ['bazar', household.id, 'currentMonthCheck'],
+    queryFn: () => {
+      const { from, to } = monthKeyRange(currentMonthKey())
+      return listBazar(household.id, { from, to, status: 'Active' })
+    },
+  })
   const nameByUser = useMemo(() => new Map((members ?? []).map((m) => [m.userId, m.name])), [members])
 
   const sortedEntries = useMemo(
@@ -59,8 +72,8 @@ export function BazarListPage() {
   const selectedLabel = selectedMember === 'all' ? null : (memberTabs.find((m) => m.userId === selectedMember)?.label ?? null)
 
   const hasLeftoverThisMonth = useMemo(
-    () => (entries ?? []).some((e) => e.status === 'Active' && e.amount < 0 && e.date.slice(0, 7) === currentMonthKey()),
-    [entries],
+    () => (currentMonthEntries ?? []).some((e) => e.amount < 0),
+    [currentMonthEntries],
   )
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['bazar', household.id] })
@@ -124,8 +137,23 @@ export function BazarListPage() {
   const editingEntry = formOpen && formOpen !== 'create' && formOpen !== 'leftover' ? formOpen : null
   const isLeftoverMode = formOpen === 'leftover'
 
+  const filterCount = activeLedgerFilterCount(filter)
+
   return (
     <div className="flex flex-col gap-3">
+      <button
+        onClick={() => setFiltersOpen(true)}
+        aria-label="Filter Bazar entries"
+        className="relative self-end rounded-sm p-2.5 text-muted hover:bg-surface-muted hover:text-ink"
+      >
+        <Filter width={18} height={18} />
+        {filterCount > 0 && (
+          <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-pill bg-primary text-[10px] font-semibold text-on-primary">
+            {filterCount}
+          </span>
+        )}
+      </button>
+
       {canAddEntry(household.callerRole) && !hasLeftoverThisMonth && (
         <MonthEndReconciliationCard
           household={household}
@@ -174,7 +202,11 @@ export function BazarListPage() {
           )}
         </>
       ) : (
-        <EmptyState icon={<Cart width={28} height={28} />} title="No Bazar Entries Yet" />
+        <EmptyState
+          icon={<Cart width={28} height={28} />}
+          title={filterCount > 0 ? 'No Matching Bazar Entries' : 'No Bazar Entries Yet'}
+          description={filterCount > 0 ? 'Try widening your filters.' : undefined}
+        />
       )}
 
       {canAddEntry(household.callerRole) && (
@@ -235,6 +267,8 @@ export function BazarListPage() {
           else createMutation.mutate(values)
         }}
       />
+
+      <LedgerFilterSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filter Bazar Entries" value={filter} onApply={setFilter} />
 
       <ConfirmDialog
         open={!!deleteTarget}
