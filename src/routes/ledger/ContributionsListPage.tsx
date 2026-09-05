@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
 import { listMembers } from '@/lib/api/households'
-import { cancelContribution, createContribution, createContributionFor, listContributions, updateContribution } from '@/lib/api/contributions'
+import { deleteContribution, createContribution, createContributionFor, listContributions, updateContribution } from '@/lib/api/contributions'
 import type { ContributionDto } from '@/lib/api/types'
 import { canAddContributionForOthers, canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
@@ -21,7 +21,7 @@ export function ContributionsListPage() {
   const { household, currentUserId } = useHouseholdContext()
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState<'create' | ContributionDto | null>(null)
-  const [cancelTarget, setCancelTarget] = useState<ContributionDto | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ContributionDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
 
@@ -83,16 +83,16 @@ export function ContributionsListPage() {
     onError: (err) => handleFormError(err),
   })
 
-  const cancelMutation = useMutation({
-    mutationFn: (id: string) => cancelContribution(household.id, id),
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteContribution(household.id, id),
     onSuccess: () => {
       invalidate()
-      toast.success('Entry cancelled')
-      setCancelTarget(null)
+      toast.success('Contribution deleted')
+      setDeleteTarget(null)
     },
     onError: (err) => {
       toast.error(errorMessage(err))
-      setCancelTarget(null)
+      setDeleteTarget(null)
     },
   })
 
@@ -141,7 +141,7 @@ export function ContributionsListPage() {
                   setFieldErrors({})
                   setFormOpen(entry)
                 }}
-                onCancel={() => setCancelTarget(entry)}
+                onDelete={() => setDeleteTarget(entry)}
               />
             ))
           ) : (
@@ -187,14 +187,14 @@ export function ContributionsListPage() {
       />
 
       <ConfirmDialog
-        open={!!cancelTarget}
-        title="Cancel This Entry?"
-        description="It stays visible in the list, struck through, but no longer counts toward the ledger."
-        confirmLabel="Cancel Entry"
+        open={!!deleteTarget}
+        title="Permanently Delete This Contribution?"
+        description="This cannot be undone."
+        confirmLabel="Delete Permanently"
         danger
-        isLoading={cancelMutation.isPending}
-        onConfirm={() => cancelTarget && cancelMutation.mutate(cancelTarget.id)}
-        onCancel={() => setCancelTarget(null)}
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   )

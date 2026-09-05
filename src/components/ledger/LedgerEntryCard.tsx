@@ -27,7 +27,7 @@ export function LedgerEntryCard({
   recordedByName,
   canEdit,
   onEdit,
-  onCancel,
+  onDelete,
   householdId,
 }: {
   entry: LedgerEntryView
@@ -36,7 +36,8 @@ export function LedgerEntryCard({
   recordedByName?: string
   canEdit: boolean
   onEdit: () => void
-  onCancel: () => void
+  /** Permanent hard delete — not a soft-cancel (§2 changelog, 2026-09-04). */
+  onDelete: () => void
   /** Needed to link a Bazar entry to its mirrored contribution, or vice versa. */
   householdId?: string
 }) {
@@ -88,7 +89,7 @@ export function LedgerEntryCard({
           <button onClick={onEdit} aria-label="Edit" className="rounded-pill p-3 text-muted hover:bg-surface-muted hover:text-ink">
             <Pencil width={16} height={16} />
           </button>
-          <button onClick={onCancel} aria-label="Cancel entry" className="rounded-pill p-3 text-muted hover:bg-danger-soft hover:text-danger">
+          <button onClick={onDelete} aria-label="Delete entry" className="rounded-pill p-3 text-muted hover:bg-danger-soft hover:text-danger">
             <Trash width={16} height={16} />
           </button>
         </div>

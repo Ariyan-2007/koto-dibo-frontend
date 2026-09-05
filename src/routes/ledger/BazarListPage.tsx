@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useHouseholdContext } from '@/routes/HouseholdLayout'
 import { listMembers } from '@/lib/api/households'
-import { cancelBazar, createBazar, createBazarFor, listBazar, updateBazar } from '@/lib/api/bazar'
+import { deleteBazar, createBazar, createBazarFor, listBazar, updateBazar } from '@/lib/api/bazar'
 import type { BazarPurchaseDto } from '@/lib/api/types'
 import { canAddBazarForOthers, canAddEntry, canEditEntry } from '@/lib/permissions'
 import { ApiError } from '@/lib/api/client'
@@ -23,7 +23,7 @@ export function BazarListPage() {
   const { household, currentUserId } = useHouseholdContext()
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState<'create' | 'leftover' | BazarPurchaseDto | null>(null)
-  const [cancelTarget, setCancelTarget] = useState<BazarPurchaseDto | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<BazarPurchaseDto | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | undefined>()
   const [selectedMember, setSelectedMember] = useState<string | 'all'>('all')
@@ -91,16 +91,16 @@ export function BazarListPage() {
     onError: (err) => handleFormError(err),
   })
 
-  const cancelMutation = useMutation({
-    mutationFn: (id: string) => cancelBazar(household.id, id),
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteBazar(household.id, id),
     onSuccess: () => {
       invalidate()
-      toast.success('Entry cancelled')
-      setCancelTarget(null)
+      toast.success('Bazar entry deleted')
+      setDeleteTarget(null)
     },
     onError: (err) => {
       toast.error(errorMessage(err))
-      setCancelTarget(null)
+      setDeleteTarget(null)
     },
   })
 
@@ -166,7 +166,7 @@ export function BazarListPage() {
                   setFormError(undefined)
                   setFormOpen(entry)
                 }}
-                onCancel={() => setCancelTarget(entry)}
+                onDelete={() => setDeleteTarget(entry)}
               />
             ))
           ) : (
@@ -237,14 +237,14 @@ export function BazarListPage() {
       />
 
       <ConfirmDialog
-        open={!!cancelTarget}
-        title="Cancel This Entry?"
-        description="It stays visible in the list, struck through, but no longer counts toward the ledger."
-        confirmLabel="Cancel Entry"
+        open={!!deleteTarget}
+        title="Permanently Delete This Bazar Purchase?"
+        description="This cannot be undone. If it was paid from your pocket, the linked contribution is deleted with it."
+        confirmLabel="Delete Permanently"
         danger
-        isLoading={cancelMutation.isPending}
-        onConfirm={() => cancelTarget && cancelMutation.mutate(cancelTarget.id)}
-        onCancel={() => setCancelTarget(null)}
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   )

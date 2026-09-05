@@ -28,6 +28,7 @@ export function updateContribution(householdId: string, contributionId: string, 
   return api.patch<ContributionDto>(`/households/${householdId}/contributions/${contributionId}`, input)
 }
 
-export function cancelContribution(householdId: string, contributionId: string) {
-  return api.post<ContributionDto>(`/households/${householdId}/contributions/${contributionId}/cancel`)
+/** Hard delete — irreversible. Rejected for AutoFromBazar rows; delete the originating Bazar purchase instead. */
+export function deleteContribution(householdId: string, contributionId: string) {
+  return api.delete<void>(`/households/${householdId}/contributions/${contributionId}`)
 }

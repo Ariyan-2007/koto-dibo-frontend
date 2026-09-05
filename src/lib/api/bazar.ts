@@ -29,6 +29,7 @@ export function updateBazar(householdId: string, purchaseId: string, input: Part
   return api.patch<BazarPurchaseDto>(`/households/${householdId}/bazar/${purchaseId}`, input)
 }
 
-export function cancelBazar(householdId: string, purchaseId: string) {
-  return api.post<BazarPurchaseDto>(`/households/${householdId}/bazar/${purchaseId}/cancel`)
+/** Hard delete — irreversible. Also cascades to the linked auto-generated Contribution, if any. */
+export function deleteBazar(householdId: string, purchaseId: string) {
+  return api.delete<void>(`/households/${householdId}/bazar/${purchaseId}`)
 }
