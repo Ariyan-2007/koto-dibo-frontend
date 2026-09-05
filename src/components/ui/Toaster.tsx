@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn'
 
 const toneClasses = {
   info: 'bg-surface text-ink border-border',
-  success: 'bg-primary text-white border-primary',
+  success: 'bg-primary text-on-primary border-primary',
   error: 'bg-danger-soft text-danger border-danger-border',
 }
 

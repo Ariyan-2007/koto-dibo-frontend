@@ -3,6 +3,7 @@ import type { HouseholdDto } from '@/lib/api/types'
 import { navItems } from './nav'
 import { HouseholdSwitcher } from './HouseholdSwitcher'
 import { OfflineBadge } from './OfflineBadge'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Wallet } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 
@@ -10,7 +11,7 @@ export function Sidebar({ household }: { household: HouseholdDto }) {
   return (
     <aside className="hidden w-56 shrink-0 flex-col border-r border-border md:flex">
       <div className="flex items-center gap-2 border-b border-border px-4 py-4">
-        <div className="grid h-6 w-6 shrink-0 place-items-center rounded-sm bg-primary font-bn text-[13px] text-white">৳</div>
+        <div className="grid h-6 w-6 shrink-0 place-items-center rounded-sm bg-primary font-bn text-[13px] text-on-primary">৳</div>
         <span className="font-heading text-[15px] font-semibold tracking-tight">KOTO DIBO</span>
       </div>
 
@@ -27,7 +28,7 @@ export function Sidebar({ household }: { household: HouseholdDto }) {
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-2.5 rounded-sm px-2.5 py-2 text-[14px] font-heading font-semibold',
-                isActive ? 'bg-primary text-white' : 'text-ink hover:bg-surface-muted',
+                isActive ? 'bg-primary text-on-primary' : 'text-ink hover:bg-surface-muted',
               )
             }
           >
@@ -35,7 +36,7 @@ export function Sidebar({ household }: { household: HouseholdDto }) {
               <>
                 <Icon width={17} height={17} />
                 <span>{label}</span>
-                <span className={cn('bn ml-auto text-[11px]', isActive ? 'text-white/70' : 'text-muted')}>{bn}</span>
+                <span className={cn('bn ml-auto text-[11px]', isActive ? 'text-on-primary/70' : 'text-muted')}>{bn}</span>
               </>
             )}
           </NavLink>
@@ -50,7 +51,10 @@ export function Sidebar({ household }: { household: HouseholdDto }) {
           <Wallet width={17} height={17} />
           Personal finance
         </Link>
-        <OfflineBadge />
+        <div className="flex items-center justify-between gap-2">
+          <ThemeToggle />
+          <OfflineBadge />
+        </div>
       </div>
     </aside>
   )

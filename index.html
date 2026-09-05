@@ -4,8 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#faf9f5" id="theme-color-meta" />
+    <script>
+      try {
+        var kdTheme = localStorage.getItem('koto-dibo:theme');
+        if (kdTheme === 'light' || kdTheme === 'dark') document.documentElement.dataset.theme = kdTheme;
+        var kdDark = kdTheme === 'dark' || (kdTheme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.getElementById('theme-color-meta').setAttribute('content', kdDark ? '#0d1117' : '#faf9f5');
+      } catch (e) {}
+    </script>
     <meta name="description" content="Shared household ledger for bazar, contributions, meals, and bill splits." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

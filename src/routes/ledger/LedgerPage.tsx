@@ -26,7 +26,7 @@ export function LedgerPage() {
               cn(
                 'px-4 py-1.5 text-center font-heading text-[13px] font-semibold',
                 i > 0 && 'border-l border-border',
-                isActive ? 'bg-primary text-white' : 'text-ink hover:bg-surface-muted',
+                isActive ? 'bg-primary text-on-primary' : 'text-ink hover:bg-surface-muted',
               )
             }
           >

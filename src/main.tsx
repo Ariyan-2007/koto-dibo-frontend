@@ -7,10 +7,12 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 import { queryClient } from '@/lib/queryClient'
 import { bootstrapSession } from '@/lib/api/client'
 import { initOfflineQueue } from '@/lib/offlineQueue'
+import { bootstrapTheme } from '@/lib/theme/themeStore'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import App from './App'
 import './index.css'
 
+bootstrapTheme()
 void bootstrapSession()
 void initOfflineQueue()
 

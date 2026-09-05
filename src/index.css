@@ -25,6 +25,10 @@
   --color-warning: #b45309;
   --color-warning-soft: #fffbeb;
   --color-warning-border: #fde3ad;
+  /** Text/icon color for content sitting on `bg-primary`/`bg-primary-hover`/`bg-primary-active` —
+   * those backgrounds flip from dark (light mode) to mid-toned (dark mode), so the "on" color
+   * has to flip too instead of staying hardcoded `text-white`. */
+  --color-on-primary: #ffffff;
 
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -41,8 +45,17 @@
   color-scheme: light;
 }
 
+/* Dark palette, applied two ways:
+   - `@media (prefers-color-scheme: dark)`, guarded so an explicit `data-theme="light"` (the
+     toggle's "Light" option) always wins over a dark OS setting.
+   - `:root[data-theme="dark"]`, for the toggle's "Dark" option regardless of OS setting.
+   "System" leaves `data-theme` unset entirely (see themeStore.ts), so it's carried by the media
+   query alone and keeps following OS changes live with no JS listener needed.
+   Values are WCAG AA-checked against their actual usage (text/icon vs. background pairs), not
+   just naively inverted from the light palette — see MEMORY.md / commit notes for specifics
+   (`--color-primary-soft` and `--color-primary-deep` in particular are tuned, not mirrored). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
     --color-bg: #0d1117;
     --color-surface: #141a22;
@@ -53,8 +66,8 @@
     --color-primary: #2f9d91;
     --color-primary-hover: #6dbcb3;
     --color-primary-active: #a8d5cf;
-    --color-primary-soft: #16302c;
-    --color-primary-deep: #eef4fb;
+    --color-primary-soft: #102420;
+    --color-primary-deep: #09453e;
     --color-accent-200: #1c3733;
     --color-accent-300: #16302c;
     --color-accent-400: #0f766e;
@@ -64,10 +77,39 @@
     --color-warning: #fbbf24;
     --color-warning-soft: #332705;
     --color-warning-border: #5c4a12;
+    --color-on-primary: #04211d;
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-sheet: 0 -8px 28px rgba(0, 0, 0, 0.5);
     --shadow-pop: 0 6px 20px rgba(0, 0, 0, 0.45);
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0d1117;
+  --color-surface: #141a22;
+  --color-surface-muted: #1b232d;
+  --color-border: color-mix(in srgb, #eef4fb 18%, transparent);
+  --color-ink: #eef1f5;
+  --color-muted: #949daa;
+  --color-primary: #2f9d91;
+  --color-primary-hover: #6dbcb3;
+  --color-primary-active: #a8d5cf;
+  --color-primary-soft: #102420;
+  --color-primary-deep: #09453e;
+  --color-accent-200: #1c3733;
+  --color-accent-300: #16302c;
+  --color-accent-400: #0f766e;
+  --color-danger: #ff8a80;
+  --color-danger-soft: #2a1215;
+  --color-danger-border: #5c2b2e;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #332705;
+  --color-warning-border: #5c4a12;
+  --color-on-primary: #04211d;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sheet: 0 -8px 28px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
 * {

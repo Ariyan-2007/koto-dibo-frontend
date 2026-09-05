@@ -72,7 +72,7 @@ export function BudgetsPage() {
             className={cn(
               'shrink-0 px-3 py-1.5 font-heading text-[13px] font-semibold',
               i > 0 && 'border-l border-border',
-              statusFilter === tab.value ? 'bg-primary text-white' : 'text-ink hover:bg-surface-muted',
+              statusFilter === tab.value ? 'bg-primary text-on-primary' : 'text-ink hover:bg-surface-muted',
             )}
           >
             {tab.label}

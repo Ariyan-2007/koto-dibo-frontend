@@ -29,7 +29,7 @@ export function PWAUpdatePrompt() {
         <button
           onClick={() => setNeedRefresh(false)}
           aria-label="Dismiss update notice"
-          className="text-ink-muted hover:text-ink"
+          className="text-muted hover:text-ink"
         >
           <X width={16} height={16} />
         </button>

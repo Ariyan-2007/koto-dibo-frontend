@@ -134,7 +134,7 @@ export function ExpensesPage() {
           >
             <Filter width={18} height={18} />
             {filterCount > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-pill bg-primary text-[10px] font-semibold text-white">
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-pill bg-primary text-[10px] font-semibold text-on-primary">
                 {filterCount}
               </span>
             )}
